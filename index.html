@@ -18,9 +18,7 @@
             #map-area { height: 55% !important; order: 1; }
             header { height: 50px !important; padding: 0 15px !important; }
             .logo { font-size: 18px !important; }
-            .slide-card { width: 90% !important; height: 80% !important; padding: 20px !important; }
-            .slide-icon { font-size: 40px !important; }
-            .slide-text-box { font-size: 14px !important; }
+            .slide-card { width: 90% !important; height: auto !important; min-height: 300px; padding: 20px !important; }
         }
 
         /* UI 스타일 */
@@ -50,9 +48,9 @@
         
         /* Intro */
         #intro-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.98); z-index:9999; display:flex; justify-content:center; align-items:center; }
-        .slide-card { background:#fff; color:#333; width:90%; max-width:600px; height:400px; border-radius:15px; padding:20px; display:none; flex-direction:column; }
+        .slide-card { background:#fff; color:#333; width:90%; max-width:600px; height:400px; border-radius:15px; padding:20px; display:none; flex-direction:column; justify-content: space-between; text-align: center;}
         .slide-card.active { display:flex; }
-        .btn-ppt { background: #0054a6; color: #fff; border:none; padding:10px 20px; border-radius:8px; font-weight:bold; cursor:pointer; margin-top:auto; align-self:flex-end;}
+        .btn-ppt { background: #0054a6; color: #fff; border:none; padding:15px 30px; border-radius:8px; font-weight:bold; cursor:pointer; font-size: 18px; margin-top:auto; width: 100%;}
         
         .res-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; font-size: 12px; }
     </style>
@@ -60,15 +58,24 @@
 <body>
     <div id="intro-overlay">
         <div class="slide-card active" id="s1">
-            <h2 style="color:#0054a6">1. VPP 교육 시뮬레이터</h2>
-            <div style="font-size:50px; text-align:center;">🎓</div>
-            <p>반갑습니다! 본 게임은 <b>가상발전소 운영</b>을 학습하는 모바일 웹앱입니다.<br>화면을 터치하여 진행하세요.</p>
-            <button class="btn-ppt" onclick="nextS(2)">다음</button>
+            <div>
+                <h2 style="color:#0054a6; margin-top:0;">1. VPP 교육 시뮬레이터</h2>
+                <div style="font-size:60px; margin: 20px 0;">🎓</div>
+                <p style="font-size: 16px; line-height: 1.5;">반갑습니다! 본 게임은 <b>가상발전소 운영</b>을 학습하는 모바일 웹앱입니다.<br>화면을 터치하여 진행하세요.</p>
+            </div>
+            <button class="btn-ppt" onclick="showSlide(2)">다음 ▶</button>
         </div>
+
         <div class="slide-card" id="s2">
-            <h2 style="color:#0054a6">2. 게임 규칙</h2>
-            <p>1. <b>자동 성장:</b> 설비는 시간이 지나면 저절로 늘어납니다.<br>2. <b>위기 관리:</b> 전기가 부족하면 [방전], 남으면 [충전]하세요.<br>3. <b>AI 팁:</b> 좌측(혹은 하단) AI의 조언을 따르세요.</p>
-            <button class="btn-ppt" onclick="startGame()">훈련 시작 🚀</button>
+            <div>
+                <h2 style="color:#0054a6; margin-top:0;">2. 게임 규칙</h2>
+                <div style="font-size: 16px; line-height: 1.8; text-align: left; background: #f0f4f8; padding: 15px; border-radius: 10px;">
+                    1. <b>자동 성장:</b> 설비는 시간이 지나면 저절로 늘어납니다.<br>
+                    2. <b>위기 관리:</b> 전기가 부족하면 [방전], 남으면 [충전]하세요.<br>
+                    3. <b>AI 팁:</b> 좌측(혹은 하단) AI의 조언을 따르세요.
+                </div>
+            </div>
+            <button class="btn-ppt" style="background:#00c853;" onclick="startGame()">훈련 시작 🚀</button>
         </div>
     </div>
 
@@ -95,3 +102,165 @@
                 <div class="res-grid">
                     <span>⚡공급: <span id="val-sup" style="color:var(--success)">0</span></span>
                     <span>🏢수요: <span id="val-dem" style="color:var(--danger)">0</span></span>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title">🎛️ VPP 제어 (배터리: <span id="val-soc">50</span>%)</div>
+                <div class="btn-grid">
+                    <button class="ctrl-btn c-charge" id="btn-c" onclick="act('c')">충전</button>
+                    <button class="ctrl-btn c-discharge" id="btn-d" onclick="act('d')">방전</button>
+                    <button class="ctrl-btn c-dr" id="btn-dr" onclick="tog('dr')">DR 발령</button>
+                    <button class="ctrl-btn c-cut" id="btn-cut" onclick="tog('cut')">출력제어</button>
+                </div>
+            </div>
+            <div class="card" style="opacity:0.7">
+                <div class="card-title">🏗️ 설비 (자동증설)</div>
+                <div class="res-grid">
+                    <span>☀️ 태양광 <span id="cnt-s">0</span></span>
+                    <span>🌀 풍력 <span id="cnt-w">0</span></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Service Worker 등록 (PWA 필수)
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js');
+        }
+
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        let w, h, scale, offX, offY;
+        
+        // Game State
+        let run = false, time = 720, level = 1, coin = 0, freq = 60.0;
+        let supply = 0, demand = 0, essL = 1000, essC = 2000;
+        let action = 'stop', dr = false, cut = false;
+        let nodes = [
+            {id:'s', x:0.35, y:0.25, c:'#ef5350', t:'load'}, {id:'g', x:0.7, y:0.2, c:'#42a5f5', t:'wind'},
+            {id:'c', x:0.4, y:0.45, c:'#ffa726', t:'hub'}, {id:'h', x:0.3, y:0.7, c:'#ab47bc', t:'solar'},
+            {id:'y', x:0.75, y:0.65, c:'#26c6da', t:'ind'}, {id:'j', x:0.3, y:0.92, c:'#66bb6a', t:'wind'}
+        ];
+        let objs = [];
+
+        // === 화면 전환 함수 (여기 수정됨) ===
+        function showSlide(n) {
+            document.querySelectorAll('.slide-card').forEach(e => e.style.display = 'none');
+            document.getElementById('s' + n).style.display = 'flex';
+        }
+
+        function startGame() {
+            document.getElementById('intro-overlay').style.display = 'none';
+            resize(); 
+            run = true;
+            // Init objects
+            spawn('s', 'h', 3); spawn('w', 'j', 2); spawn('a', 's', 5);
+            loop();
+        }
+
+        function resize() {
+            if(!canvas) return;
+            w = canvas.width = document.getElementById('map-area').clientWidth;
+            h = canvas.height = document.getElementById('map-area').clientHeight;
+            let s = Math.min(w, h);
+            scale = s; offX = (w-s)/2; offY = (h-s)/2;
+        }
+        window.onresize = resize;
+
+        function spawn(t, rid, n) {
+            let node = nodes.find(x=>x.id===rid);
+            if(!node) return;
+            for(let i=0; i<n; i++) objs.push({t:t, x:node.x+(Math.random()-.5)*0.15, y:node.y+(Math.random()-.5)*0.15, p:Math.random()*10});
+        }
+
+        function loop() {
+            if(!run) return;
+            update(); draw();
+            requestAnimationFrame(loop);
+        }
+
+        function update() {
+            time += 0.2;
+            if(time>=1440) { time=0; level++; spawn('s','h',2); document.getElementById('forecast-banner').style.display='block'; setTimeout(()=>{document.getElementById('forecast-banner').style.display='none'},3000); }
+
+            // Physics
+            let curve = (time/60>9 && time/60<21) ? 1.3 : 0.7;
+            let baseL = 2000 + (level*100);
+            demand = baseL * curve * (dr ? 0.8 : 1);
+
+            let baseG = 2500 + (level*50);
+            let sun = (time/60>7 && time/60<18) ? 1 : 0;
+            let reG = (objs.filter(o=>o.t==='s').length*200*sun) + (objs.filter(o=>o.t==='w').length*200*0.5);
+            let totalG = baseG + reG; if(cut) totalG *= 0.7;
+
+            essC = 2000 + level*300;
+            let flow = 0;
+            if(action==='c' && essL<essC) flow = -1000;
+            if(action==='d' && essL>0) flow = 1000;
+            
+            essL -= flow*0.01; // Slow battery
+            essL = Math.max(0, Math.min(essL, essC));
+            supply = Math.floor(totalG + flow);
+
+            let diff = supply - demand;
+            freq += diff * 0.00005;
+            freq += (60 - freq) * 0.05;
+            
+            if(freq>=59.8 && freq<=60.2) coin++;
+
+            // AI & UI
+            let ai = document.getElementById('ai-text');
+            let box = document.getElementById('ai-box');
+            if(freq < 59.7) { ai.innerText = "⚠️ 전력 부족! [방전]하세요!"; box.style.borderColor = "red"; }
+            else if(freq > 60.3) { ai.innerText = "⚠️ 전력 과잉! [충전]하세요!"; box.style.borderColor = "cyan"; }
+            else { ai.innerText = "안정적입니다. (코인 채굴중)"; box.style.borderColor = "#ccc"; }
+
+            document.getElementById('ui-coin').innerText = coin;
+            document.getElementById('ui-level').innerText = level;
+            document.getElementById('ui-freq').innerText = freq.toFixed(1);
+            document.getElementById('val-sup').innerText = Math.floor(supply);
+            document.getElementById('val-dem').innerText = Math.floor(demand);
+            document.getElementById('val-soc').innerText = Math.floor(essL/essC*100);
+            document.getElementById('cnt-s').innerText = objs.filter(o=>o.t==='s').length;
+            document.getElementById('cnt-w').innerText = objs.filter(o=>o.t==='w').length;
+        }
+
+        function act(a) { action = (action===a)?'stop':a; updBtn(); }
+        function tog(t) { if(t==='dr') dr=!dr; if(t==='cut') cut=!cut; updBtn(); }
+        function updBtn() {
+            document.querySelectorAll('.ctrl-btn').forEach(b=>b.classList.remove('active'));
+            if(action==='c') document.getElementById('btn-c').classList.add('active');
+            if(action==='d') document.getElementById('btn-d').classList.add('active');
+            if(dr) document.getElementById('btn-dr').classList.add('active');
+            if(cut) document.getElementById('btn-cut').classList.add('active');
+        }
+
+        function draw() {
+            ctx.fillStyle = '#0b0c15'; ctx.fillRect(0,0,w,h);
+            
+            // Map Nodes
+            nodes.forEach(n => {
+                let cx = n.x * scale + offX;
+                let cy = n.y * scale + offY;
+                ctx.beginPath(); ctx.arc(cx, cy, 40, 0, Math.PI*2);
+                ctx.fillStyle = n.c; ctx.globalAlpha = 0.2; ctx.fill();
+                ctx.strokeStyle = n.c; ctx.globalAlpha = 1; ctx.lineWidth = 2; ctx.stroke();
+                
+                // Name
+                ctx.fillStyle = '#fff'; ctx.font = 'bold 14px sans-serif'; ctx.textAlign='center';
+                ctx.fillText(n.id.toUpperCase(), cx, cy+5);
+            });
+
+            // Objects
+            objs.forEach(o => {
+                let cx = o.x * scale + offX;
+                let cy = o.y * scale + offY;
+                let icon = o.t==='s'?'☀️':(o.t==='w'?'🌀':(o.t==='a'?'🏢':'🏭'));
+                let float = Math.sin(Date.now()*0.003 + o.p) * 3;
+                ctx.font = '20px Arial'; ctx.fillText(icon, cx, cy+float);
+            });
+        }
+    </script>
+</body>
+</html>
