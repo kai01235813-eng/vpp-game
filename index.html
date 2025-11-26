@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>KEPCO VPP: Final Complete</title>
+    <title>KEPCO VPP Training: AI Edu</title>
     <link href="https://fonts.googleapis.com/css2?family=Jua&family=Noto+Sans+KR:wght@500;700&display=swap" rel="stylesheet">
     <style>
-        /* === UI 테마 === */
+        /* === UI 테마 (유지) === */
         :root {
             --bg: #101418; --panel: #1c232e; --primary: #00d2ff;
             --accent: #ffc107; --danger: #ff5252; --success: #00e676; --text: #ffffff;
@@ -69,7 +69,6 @@
         .metric label { font-size: 10px; color: #aaa; display: block; }
         .metric span { font-size: 18px; font-weight: bold; font-family: 'Consolas'; }
         
-        /* 모바일에서 일부 메트릭 숨김 처리 완화 */
         @media (max-width: 400px) { .metric:nth-child(2) { display: none; } }
 
         /* === 3. 레이아웃 === */
@@ -88,14 +87,14 @@
         .card { background: #252d3d; padding: 12px; border-radius: 10px; border: 1px solid #333; }
         .card-title { font-size: 14px; font-weight: bold; color: var(--primary); margin-bottom: 8px; border-bottom: 1px solid #444; padding-bottom: 4px; }
 
-        /* AI 메시지 */
+        /* AI 메시지 (수정: 폰트 크기 조정) */
         #ai-box {
             background: #fff; color: #000; padding: 10px; border-radius: 10px;
             border-left: 5px solid var(--primary); display: flex; align-items: center; gap: 10px;
-            min-height: 50px; transition: 0.3s;
+            min-height: 50px; transition: 0.3s; box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
-        .ai-face { font-size: 30px; }
-        .ai-msg { font-weight: bold; font-size: 13px; line-height: 1.3; }
+        .ai-face { font-size: 30px; flex-shrink: 0;}
+        .ai-msg { font-weight: bold; font-size: 14px; line-height: 1.4; }
 
         /* 설비 현황 */
         .res-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; font-size: 13px; }
@@ -109,7 +108,7 @@
             pointer-events: none;
         }
         .ctrl-btn.unlocked { opacity: 1; pointer-events: auto; box-shadow: 0 0 5px rgba(255,255,255,0.2); }
-        .ctrl-btn.active { opacity: 1; transform: scale(1.05); box-shadow: 0 0 15px currentColor; border: 2px solid #fff; }
+        .ctrl-btn.active { opacity: 1; transform: scale(1.05); box-shadow: 0 0 10px currentColor; border: 2px solid #fff; }
         
         .c-charge { background: var(--danger); } .c-discharge { background: var(--success); }
         .c-dr { background: #9c27b0; grid-column: span 2; } .c-cut { background: #ff9800; grid-column: span 2; }
@@ -126,7 +125,7 @@
             flex: 1; position: relative; background: radial-gradient(circle at 50% 50%, #1b263b 0%, #0b0c15 100%);
             overflow: hidden;
         }
-        canvas { display: block; width: 100%; height: 100%; }
+        canvas { display: block; width: 100%; height: 100%; cursor: default; }
 
         /* 가이드 */
         #guide-overlay {
@@ -160,12 +159,12 @@
 
     <div id="intro-overlay">
         <div class="slide-card active" id="s1">
-            <div class="slide-header">1. 가상발전소(VPP) 개요</div>
+            <div class="slide-header">1. KEPCO VPP 개요</div>
             <div class="slide-body">
                 <div class="slide-icon">🔌 + ☀️ = 🏭</div>
                 <div class="slide-text-box">
-                    <b>[정의]</b><br>ICT 기술로 분산된 에너지를 연결하여 <b>하나의 발전소처럼 제어</b>하는 시스템입니다.<br><br>
-                    <b>[목적]</b><br>재생에너지의 불안정함을 <b>ESS</b>와 <b>제어 기술</b>로 보완합니다.
+                    <b>[정의]</b><br>ICT 기술로 분산된 소규모 에너지를 연결하여<br><b>하나의 발전소처럼 제어</b>하는 시스템입니다.<br><br>
+                    <b>[목적]</b><br>재생에너지의 불안정함을 <b>ESS(저장장치)</b>와 <b>제어 기술</b>로 보완합니다.
                 </div>
             </div>
             <div class="slide-footer"><button class="btn-ppt" onclick="showSlide(2)">다음 ▶</button></div>
@@ -176,7 +175,7 @@
                 <div class="slide-icon">⚖️</div>
                 <div class="slide-text-box">
                     전력망은 <b>생산과 소비의 균형(60Hz)</b>이 생명입니다.<br><br>
-                    <b>[운영 매뉴얼]</b><br>
+                    <b>[운영자의 임무]</b><br>
                     - 공급 < 수요 : <b style="color:red">정전 위험!</b> ➔ [방전] / [DR]<br>
                     - 공급 > 수요 : <b style="color:orange">과부하 위험!</b> ➔ [충전] / [출력제어]
                 </div>
@@ -189,10 +188,10 @@
         <div class="slide-card" id="s3">
             <div class="slide-header">3. 게임 방법</div>
             <div class="slide-body">
-                <div class="slide-icon">🎮</div>
+                <div class="slide-icon">🤖</div>
                 <div class="slide-text-box">
-                    1. <b>자동 성장:</b> 설비는 시간이 지나면 <b>자동 건설</b>됩니다.<br>
-                    2. <b>AI 팁:</b> 실전에서 AI가 실시간으로 팁을 줍니다.<br>
+                    1. <b>자동 성장:</b> 설비는 국가 계획에 따라 <b>자동 건설</b>됩니다.<br>
+                    2. <b>AI 팁:</b> 실전에서 AI가 팁을 줍니다.<br>
                     3. <b>튜토리얼:</b> 먼저 위기 대응법을 실습합니다.<br><br>
                     준비되셨습니까?
                 </div>
@@ -212,8 +211,7 @@
                 <span class="coin-text" id="ui-coin">0</span>
             </div>
             <div class="metric"><label>LEVEL</label><span id="ui-level">1</span></div>
-            <div class="metric"><label>TIME</label><span id="ui-time">12:00</span></div>
-            <div class="metric"><label>FREQ</label><span id="ui-freq" style="color:var(--primary)">60.00</span> Hz</div>
+            <div class="metric"><label>FREQ</label><span id="ui-freq" style="color:var(--primary)">60.00</span>Hz</div>
         </div>
     </header>
 
@@ -253,10 +251,10 @@
             <div class="card">
                 <div class="card-title">🏗️ 설비 현황 (자동증설)</div>
                 <div class="res-grid">
-                    <div>☀️ 태양광 <span id="cnt-s" style="color:var(--success)">0</span></div>
-                    <div>🌀 풍력 <span id="cnt-w" style="color:var(--success)">0</span></div>
-                    <div>🏢 아파트 <span id="cnt-a" style="color:var(--danger)">0</span></div>
-                    <div>🏭 공장 <span id="cnt-f" style="color:var(--danger)">0</span></div>
+                    <div>☀️ 태양광 <span id="cnt-solar" style="color:var(--success)">0</span></div>
+                    <div>🌀 풍력 <span id="cnt-wind" style="color:var(--success)">0</span></div>
+                    <div>🏢 아파트 <span id="cnt-apt" style="color:var(--danger)">0</span></div>
+                    <div>🏭 공장 <span id="cnt-fac" style="color:var(--danger)">0</span></div>
                 </div>
             </div>
         </div>
@@ -273,16 +271,13 @@
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
 
-        // Config
-        const TICK_SPEED = 0.2; // 속도
+        const TICK_SPEED = 0.3; 
         const MAX_LEVEL = 20;
 
-        // State
         let isRunning = false, isAuto = false, mode = 'PPT';
         let step = 0, time = 720, level = 1, coin = 0, freq = 60.00;
         let supply = 0, demand = 0, targetSupply = 0, targetDemand = 0;
-        let essCap = 2000, essLevel = 1000;
-        let action = 'stop', drOn = false, cutOn = false;
+        let essCap = 2000, essLevel = 1000, action = 'stop', drOn = false, cutOn = false;
         let pendingExpansion = null;
 
         const nodes = [
@@ -295,7 +290,6 @@
         ];
         let objects = [];
 
-        // Init
         function resize() {
             if(!canvas) return;
             canvas.width = document.getElementById('map-area').clientWidth;
@@ -313,9 +307,9 @@
             resize();
             isRunning = true;
             
-            // 튜토리얼용 초기 설비 (최소한)
-            objects = [];
-            spawn('s','honam',1); spawn('a','seoul',1); 
+            spawn('solar', 'honam', 2);
+            spawn('wind', 'jeju', 1);
+            spawn('apt', 'seoul', 3);
 
             startTutorial();
             gameLoop();
@@ -327,11 +321,10 @@
             for(let i=0; i<count; i++) {
                 let ox = (Math.random()-0.5) * 0.15;
                 let oy = (Math.random()-0.5) * 0.15;
-                objects.push({t:type, x:n.x+ox, y:n.y+oy, p:Math.random()*10});
+                objects.push({type:type, x:n.x+ox, y:n.y+oy, phase:Math.random()*10});
             }
         }
 
-        // --- Tutorial ---
         function startTutorial() {
             mode = 'TUTORIAL';
             document.getElementById('btn-auto').style.pointerEvents = 'none';
@@ -353,76 +346,69 @@
                 guide.innerHTML = "🚨 전력 부족! <b>[방전]</b> 버튼을 누르세요!";
                 let btn = document.getElementById('btn-d');
                 btn.classList.add('unlocked'); btn.style.opacity = '1'; btn.style.pointerEvents = 'auto';
-                setAIText("전력이 부족합니다! 방전이 필요합니다.", "alert");
+                setAIText("⚠️ 전력 부족! ESS 방전이 필요합니다.", "alert");
                 targetDemand = 4000; targetSupply = 2000; 
             } 
             else if(s === 2) {
                 guide.innerHTML = "🚨 전력 과잉! <b>[출력제어]</b>를 누르세요!";
                 let btn = document.getElementById('btn-cut');
                 btn.classList.add('unlocked'); btn.style.opacity = '1'; btn.style.pointerEvents = 'auto';
-                setAIText("발전량이 너무 많습니다! 출력제어 하세요.", "alert");
+                setAIText("⚠️ 발전량 과다! 출력을 제한하세요.", "alert");
                 targetDemand = 2000; targetSupply = 4000; 
                 action = 'stop'; updateBtns();
             }
             else if(s === 3) {
                 guide.innerHTML = "🎉 튜토리얼 완료! 실전 모드로 전환됩니다.";
-                setTimeout(initRealMode, 2000); // 여기서 initRealMode 호출
+                setTimeout(initRealMode, 2000);
             }
         }
 
-        // ★ 실전 모드 초기화 함수 (수치 0 방지) ★
         function initRealMode() {
             mode = 'REAL';
             document.getElementById('guide-overlay').style.display = 'none';
             
-            // 버튼 해제
             document.querySelectorAll('.ctrl-btn').forEach(b => {
                 b.classList.add('unlocked'); b.style.opacity = '1'; b.style.pointerEvents = 'auto';
             });
             document.getElementById('btn-auto').style.pointerEvents = 'auto';
             document.getElementById('btn-auto').style.opacity = '1';
             
-            // 상태 리셋
             action='stop'; drOn=false; cutOn=false; updateBtns();
-            time = 720; level = 1; 
+            level = 1; time = 720;
             
-            // ★ 설비 대량 추가 (수치 확보) ★
+            // 실전 설비 증설
             objects = [];
-            spawn('s', 'honam', 5);
-            spawn('w', 'jeju', 3);
-            spawn('w', 'gangwon', 2);
-            spawn('a', 'seoul', 5);
-            spawn('f', 'yeongnam', 2);
-            
-            setAIText("실전 모드 가동. 주파수 60Hz를 유지하세요.", "neutral");
-            showToast("🚀 실전 모드 시작! 설비가 배치되었습니다.");
+            spawn('s', 'honam', 5); spawn('w', 'jeju', 3);
+            spawn('w', 'gangwon', 2); spawn('a', 'seoul', 5); spawn('f', 'yeongnam', 2);
+
+            setAIText("실전 모드 시작. AI 자동운전을 활용하세요!", "happy");
+            showToast("🚀 실전 모드 가동! 설비가 배치되었습니다.");
         }
 
-        // --- Input ---
         function manual(act) {
             if(isAuto) return;
-            // 튜토리얼 트리거
             if(mode === 'TUTORIAL') {
                 if(step === 1 && act === 'discharge') {
                     action = 'discharge'; updateBtns();
-                    setAIText("성공! 공급이 늘어납니다.", "happy");
-                    setTimeout(() => setTutorialStep(2), 800);
+                    setAIText("✅ 성공! 공급이 늘어납니다.", "happy");
+                    setTimeout(() => setTutorialStep(2), 1000);
                     return;
                 }
                 return;
             }
-            action = (action === act) ? 'stop' : act;
-            updateBtns();
+            action = (action === act) ? 'stop' : act; updateBtns();
         }
+
         function toggleDR() { if(!isAuto && mode==='REAL') { drOn=!drOn; updateBtns(); } }
+        
         function toggleCut() { 
             if(isAuto) return;
             if(mode === 'TUTORIAL') {
                 if(step === 2) {
                     cutOn = !cutOn; updateBtns();
                     if(cutOn) {
-                        setAIText("성공! 발전을 제한합니다.", "happy");
-                        setTimeout(() => setTutorialStep(3), 800);
+                        setAIText("✅ 성공! 발전량을 줄입니다.", "happy");
+                        setTimeout(() => setTutorialStep(3), 1000);
                     }
                     return;
                 }
@@ -430,12 +416,14 @@
             }
             cutOn = !cutOn; updateBtns();
         }
+
         function toggleAuto() {
             isAuto = !isAuto;
             let btn = document.getElementById('btn-auto');
             btn.classList.toggle('on', isAuto);
             if(!isAuto) { action='stop'; drOn=false; cutOn=false; updateBtns(); }
         }
+
         function updateBtns() {
             document.querySelectorAll('.ctrl-btn').forEach(b=>b.classList.remove('active'));
             if(action==='charge') document.getElementById('btn-c').classList.add('active');
@@ -443,13 +431,13 @@
             if(drOn) document.getElementById('btn-dr').classList.add('active');
             if(cutOn) document.getElementById('btn-cut').classList.add('active');
         }
+
         function showToast(msg) {
             let t = document.getElementById('toast');
             t.innerText = msg; t.style.display = 'block';
             setTimeout(()=>t.style.display='none', 3000);
         }
 
-        // --- Game Loop ---
         function gameLoop() {
             if(!isRunning) return;
             updatePhysics();
@@ -472,60 +460,42 @@
                 }
             }
 
-            // 물리 엔진
             if(mode === 'REAL') {
                 let h = time/60;
                 let curve = (h>9 && h<21) ? 1.3 : 0.7;
-                
-                // 부하 계산
-                let baseLoad = 2000; // 기본값
-                objects.forEach(o=>{ if(o.t==='a') baseLoad+=100; if(o.t==='f') baseLoad+=300; });
+                let baseLoad = 2000;
+                objects.forEach(o=>{ if(o.t==='a') baseLoad+=50; if(o.t==='f') baseLoad+=200; });
                 
                 let tDem = baseLoad * curve;
                 if(drOn) tDem *= 0.8;
 
-                // 발전 계산
                 let baseGen = 2000 + (level*100);
                 let reGen = 0;
                 let sun = (h>7&&h<18)?Math.sin((h-7)/11*Math.PI):0;
                 let wind = 0.5 + Math.sin(time*0.05)*0.3;
                 
                 objects.forEach(o=>{
-                    if(o.t==='s') reGen += 300*sun;
-                    if(o.t==='w') reGen += 400*wind;
+                    if(o.t==='s') reGen += 200*sun;
+                    if(o.t==='w') reGen += 250*wind;
                 });
                 
                 let tSup = baseGen + reGen;
                 if(cutOn) tSup *= 0.7;
 
-                // ESS
-                essCap = 2000 + (objects.length * 100);
+                essCap = 2000 + (level*300);
                 let flow = 0;
                 if(isAuto) autoControl(tSup, tDem);
 
-                if(action==='charge') flow = -1500;
-                if(action==='discharge') flow = 1500;
+                if(action==='charge') flow = -1000;
+                if(action==='discharge') flow = 1000;
                 
                 essLevel -= flow * 0.03;
                 essLevel = Math.max(0, Math.min(essLevel, essCap));
                 tSup += flow;
 
-                targetDemand = tDem;
-                targetSupply = tSup;
-            }
-            else {
-                // 튜토리얼 강제 수치
-                if(step===1) { 
-                    if(action==='discharge') targetSupply = 4000; 
-                    else targetSupply = 2000; 
-                }
-                if(step===2) {
-                    if(cutOn) targetSupply = 2000;
-                    else targetSupply = 4000;
-                }
+                targetDemand = tDem; targetSupply = tSup;
             }
 
-            // 부드러운 변화 (Ramping)
             demand += (targetDemand - demand) * 0.1;
             supply += (targetSupply - supply) * 0.1;
 
@@ -561,38 +531,38 @@
         }
 
         function aiLogic() {
-            if(isAuto) { setAIText("AI 자동 제어 중입니다.", "happy"); return; }
-            if(supply > demand + 200) setAIText("과잉 공급! [충전] 또는 [출력제어] 하세요.", "worry");
-            else if(supply < demand - 200) setAIText("전력 부족! [방전] 또는 [DR] 하세요.", "alert");
-            else setAIText("안정적입니다.", "neutral");
+            if(isAuto) {
+                if(action === 'charge') setAIText("🤖 공급 과잉! ESS 충전 중...", "happy");
+                else if(action === 'discharge') setAIText("🤖 공급 부족! ESS 방전 중...", "alert");
+                else if(cutOn) setAIText("🤖 ESS 만충! 출력 제어 시행 중.", "worry");
+                else if(drOn) setAIText("🤖 ESS 고갈! DR 발령 중.", "alert");
+                else setAIText("🤖 수급 안정적. 코인 채굴 중!", "happy");
+                return;
+            }
+            if(supply > demand + 200) setAIText("⚠️ 전력 과잉! [충전] 또는 [출력제어] 하세요.", "worry");
+            else if(supply < demand - 200) setAIText("⚠️ 전력 부족! [방전] 또는 [DR] 하세요.", "alert");
+            else setAIText("✅ 안정적입니다.", "neutral");
         }
 
         function setAIText(msg, mood) {
             const box = document.getElementById('ai-box');
             const txt = document.getElementById('ai-text');
             const face = document.querySelector('.ai-face');
-            txt.innerText = msg;
+            txt.innerHTML = msg;
             if(mood==='alert') { box.style.borderColor='var(--danger)'; face.innerText='🚨'; }
             else if(mood==='worry') { box.style.borderColor='var(--accent)'; face.innerText='😮'; }
             else if(mood==='happy') { box.style.borderColor='var(--success)'; face.innerText='🤖'; }
             else { box.style.borderColor='#444'; face.innerText='🤖'; }
         }
 
-        // === Draw & UI ===
         function draw() {
             let w=canvas.width; let h=canvas.height;
             ctx.clearRect(0,0,w,h);
-            // 연결선
             ctx.strokeStyle='rgba(255,255,255,0.1)'; ctx.lineWidth=2; ctx.beginPath();
             let c = getNodePos('chungcheong');
-            nodes.forEach(n=>{
-                if(n.id!=='chungcheong'&&n.id!=='jeju') {
-                    let p=getNodePos(n.id); ctx.moveTo(c.x, c.y); ctx.lineTo(p.x, p.y);
-                }
-            });
+            nodes.forEach(n=>{ if(n.id!=='chungcheong'&&n.id!=='jeju') { let p=getNodePos(n.id); ctx.moveTo(c.x, c.y); ctx.lineTo(p.x, p.y); }});
             let p1=getNodePos('honam'), p2=getNodePos('jeju'); ctx.moveTo(p1.x,p1.y); ctx.lineTo(p2.x,p2.y);
             ctx.stroke();
-            // 노드
             nodes.forEach(n=>{
                 let p=getNodePos(n.id);
                 ctx.beginPath(); ctx.arc(p.x, p.y, 50, 0, Math.PI*2);
@@ -601,7 +571,6 @@
                 ctx.fillStyle='#fff'; ctx.font='bold 16px Noto Sans KR'; ctx.textAlign='center';
                 ctx.fillText(n.name, p.x, p.y-10);
             });
-            // 아이콘
             objects.forEach(o=>{
                 let px=o.x*w; let py=o.y*h;
                 let icon = o.t==='s'?'☀️':(o.t==='w'?'🌀':(o.t==='a'?'🏢':'🏭'));
@@ -622,22 +591,18 @@
             document.getElementById('ui-time').innerText = `${hh}:${mm}`;
             document.getElementById('ui-level').innerText = level;
             document.getElementById('ui-coin').innerText = coin.toLocaleString();
-
             let fEl = document.getElementById('ui-freq');
             fEl.innerText = freq.toFixed(2);
             fEl.style.color = (freq<59.8||freq>60.2) ? 'var(--danger)' : 'var(--primary)';
-
             document.getElementById('val-sup').innerText = Math.floor(supply);
             document.getElementById('val-dem').innerText = Math.floor(demand);
-            
             let soc = Math.floor(essLevel/essCap*100);
             document.getElementById('val-soc').innerText = soc + "%";
             document.getElementById('bar-soc').style.width = soc + "%";
-
-            document.getElementById('cnt-s').innerText = objects.filter(o=>o.t==='s').length;
-            document.getElementById('cnt-w').innerText = objects.filter(o=>o.t==='w').length;
-            document.getElementById('cnt-a').innerText = objects.filter(o=>o.t==='a').length;
-            document.getElementById('cnt-f').innerText = objects.filter(o=>o.t==='f').length;
+            document.getElementById('cnt-solar').innerText = objects.filter(o=>o.t==='s').length;
+            document.getElementById('cnt-wind').innerText = objects.filter(o=>o.t==='w').length;
+            document.getElementById('cnt-apt').innerText = objects.filter(o=>o.t==='a').length;
+            document.getElementById('cnt-fac').innerText = objects.filter(o=>o.t==='f').length;
         }
     </script>
 </body>
