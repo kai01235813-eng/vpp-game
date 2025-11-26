@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>KEPCO VPP: Real Operator</title>
+    <title>KEPCO VPP Training: Final Patch</title>
     <link href="https://fonts.googleapis.com/css2?family=Jua&family=Noto+Sans+KR:wght@500;700&display=swap" rel="stylesheet">
     <style>
         /* === UI 테마 === */
@@ -39,41 +39,45 @@
         
         .slide-header { 
             font-family: 'Jua', sans-serif; font-size: 32px; color: #0054a6; 
-            border-bottom: 3px solid #0054a6; padding-bottom: 15px; margin-bottom: 20px;
+            border-bottom: 3px solid #0054a6; padding-bottom: 15px; margin-bottom: 20px; flex-shrink: 0;
         }
         .slide-body { 
-            font-size: 18px; line-height: 1.6; flex: 1; overflow-y: auto;
+            font-size: 18px; line-height: 1.6; flex: 1; 
             display: flex; flex-direction: column; justify-content: center; align-items: center;
         }
         .slide-icon { font-size: 70px; margin-bottom: 20px; }
         .slide-text-box { width: 100%; text-align: left; background: #f0f4f8; padding: 20px; border-radius: 10px; }
         
-        .slide-footer { margin-top: 20px; display: flex; justify-content: space-between; align-items: flex-end; }
+        .slide-footer { margin-top: 20px; display: flex; justify-content: space-between; align-items: flex-end; flex-shrink: 0; }
         .credits { font-size: 14px; color: #aaa; font-weight: bold; font-family: 'Consolas'; }
         
         .btn-ppt {
             padding: 12px 30px; border: none; border-radius: 10px; font-size: 18px; 
             background: #0054a6; color: white; font-family: 'Jua'; cursor: pointer;
         }
+        .btn-ppt:hover { background: #004080; }
         .btn-start { background: var(--success); color: #000; box-shadow: 0 5px 15px rgba(0,230,118,0.4); }
 
         @keyframes fadeIn { from{opacity:0; transform:translateY(10px)} to{opacity:1; transform:translateY(0)} }
 
         /* === 2. 메인 헤더 === */
         header {
-            height: 60px; background: #151a24; border-bottom: 2px solid var(--primary);
+            height: 70px; background: #151a24; border-bottom: 2px solid var(--primary);
             display: flex; align-items: center; justify-content: space-between; padding: 0 30px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.3); z-index: 100;
         }
-        .logo { font-family: 'Jua'; font-size: 24px; color: #fff; }
+        .logo { font-family: 'Jua'; font-size: 28px; color: #fff; }
         .logo span { color: var(--primary); }
 
         .status-bar { display: flex; gap: 30px; align-items: center; }
+        
         .coin-box {
             display: flex; align-items: center; gap: 10px; background: rgba(255, 215, 0, 0.15);
             padding: 6px 20px; border-radius: 30px; border: 2px solid gold;
         }
         .coin-svg { width: 24px; height: 24px; fill: gold; filter: drop-shadow(0 0 2px gold); }
+        .coin-text { font-size: 20px; font-weight: bold; color: gold; font-family: 'Consolas'; }
+
         .metric { text-align: center; }
         .metric label { font-size: 11px; color: #aaa; display: block; }
         .metric span { font-size: 20px; font-weight: bold; font-family: 'Consolas'; }
@@ -83,7 +87,7 @@
 
         /* 패널 */
         #panel {
-            width: 360px; background: var(--panel); border-right: 1px solid #333;
+            width: 380px; background: var(--panel); border-right: 1px solid #333;
             padding: 20px; display: flex; flex-direction: column; gap: 15px;
             box-shadow: 5px 0 15px rgba(0,0,0,0.2); z-index: 10; overflow-y: auto;
         }
@@ -96,8 +100,8 @@
             border-left: 5px solid var(--primary); display: flex; align-items: center; gap: 15px;
             min-height: 60px; transition: 0.3s; box-shadow: 0 2px 10px rgba(0,0,0,0.2);
         }
-        .ai-face { font-size: 30px; }
-        .ai-msg { font-weight: bold; font-size: 14px; line-height: 1.4; }
+        .ai-face { font-size: 35px; }
+        .ai-msg { font-weight: bold; font-size: 15px; line-height: 1.4; }
 
         /* 컨트롤 버튼 */
         .btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
@@ -124,7 +128,7 @@
             flex: 1; position: relative; background: radial-gradient(circle at 50% 50%, #1b263b 0%, #0b0c15 100%);
             overflow: hidden;
         }
-        canvas { display: block; width: 100%; height: 100%; }
+        canvas { display: block; width: 100%; height: 100%; cursor: default; }
 
         /* 튜토리얼 가이드 (중앙) */
         #guide-overlay {
@@ -132,8 +136,9 @@
             background: rgba(0,0,0,0.9); border: 2px solid var(--accent); color: #fff;
             padding: 15px 40px; border-radius: 50px; font-size: 20px; font-weight: bold;
             box-shadow: 0 10px 30px rgba(0,0,0,0.8); pointer-events: none; display: none; z-index: 50;
-            white-space: nowrap;
+            white-space: nowrap; animation: pulse 2s infinite;
         }
+        @keyframes pulse { 0%{transform:translateX(-50%) scale(1);} 50%{transform:translateX(-50%) scale(1.05);} 100%{transform:translateX(-50%) scale(1);} }
 
         /* 예보 배너 */
         #forecast-banner {
@@ -148,9 +153,7 @@
 </head>
 <body>
 
-    <!-- 1. PPT -->
     <div id="intro-overlay">
-        <!-- Slide 1 -->
         <div class="slide-card active" id="slide-1">
             <div class="slide-header">1. 가상발전소(VPP) 개요</div>
             <div class="slide-body">
@@ -169,7 +172,6 @@
                 <button class="btn-ppt" onclick="nextSlide(2)">다음 ▶</button>
             </div>
         </div>
-        <!-- Slide 2 -->
         <div class="slide-card" id="slide-2">
             <div class="slide-header">2. 한전의 역할</div>
             <div class="slide-body">
@@ -190,7 +192,6 @@
                 </div>
             </div>
         </div>
-        <!-- Slide 3 -->
         <div class="slide-card" id="slide-3">
             <div class="slide-header">3. 조작 방법 (중요!)</div>
             <div class="slide-body">
@@ -213,7 +214,6 @@
         </div>
     </div>
 
-    <!-- 2. 헤더 -->
     <header>
         <div class="logo">⚡ KEPCO <span>VPP</span></div>
         <div class="status-bar">
@@ -231,7 +231,6 @@
     </header>
 
     <div id="container">
-        <!-- 3. 패널 -->
         <div id="panel">
             <div id="ai-box">
                 <div class="ai-face">🤖</div>
@@ -244,13 +243,9 @@
 
             <div class="card">
                 <div class="card-title">📊 실시간 수급</div>
-                <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
-                    <span style="color:#aaa">공급(G)</span>
-                    <span id="val-sup" style="font-weight:bold; color:var(--success); font-family:Consolas;">0</span>
-                </div>
-                <div style="display:flex; justify-content:space-between;">
-                    <span style="color:#aaa">수요(L)</span>
-                    <span id="val-dem" style="font-weight:bold; color:var(--danger); font-family:Consolas;">0</span>
+                <div class="res-grid">
+                    <span>⚡ 공급(G)</span> <span id="val-sup" style="font-weight:bold; color:var(--success); font-family:Consolas;">0</span>
+                    <span>🏢 수요(L)</span> <span id="val-dem" style="font-weight:bold; color:var(--danger); font-family:Consolas;">0</span>
                 </div>
             </div>
 
@@ -272,7 +267,7 @@
 
             <div class="card">
                 <div class="card-title">🏗️ 설비 (자동증설)</div>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:5px; font-size:13px;">
+                <div class="res-grid">
                     <div>☀️ 태양광 <span id="cnt-solar" style="color:var(--success)">0</span></div>
                     <div>🌀 풍력 <span id="cnt-wind" style="color:var(--success)">0</span></div>
                     <div>🏢 아파트 <span id="cnt-apt" style="color:var(--danger)">0</span></div>
@@ -281,7 +276,6 @@
             </div>
         </div>
 
-        <!-- 4. 지도 -->
         <div id="map-area">
             <canvas id="gameCanvas"></canvas>
             <div id="guide-overlay"></div>
@@ -300,26 +294,23 @@
         // === State ===
         let isRunning = false;
         let isAuto = false;
-        let mode = 'PPT'; // PPT -> TUTORIAL -> REAL
-        let step = 0; // Tutorial step
+        let mode = 'PPT';
+        let step = 0;
 
         let time = 720; 
         let level = 1;
         let coin = 0;
         let freq = 60.00;
 
-        // Physics
         let supply = 0, demand = 0;
-        let targetSupply = 0, targetDemand = 0;
+        let targetSupply = 0, targetDemand = 0; // Ramping용
         
-        // VPP
         let essCap = 2000, essLevel = 1000;
         let action = 'stop', drOn = false, cutOn = false;
 
-        // Event
         let pendingExpansion = null;
 
-        // Map
+        // Map Data
         const nodes = [
             {id:'seoul', name:'수도권', x:0.35, y:0.25, color:'#ef5350'},
             {id:'gangwon', name:'강원', x:0.7, y:0.2, color:'#42a5f5'},
@@ -347,12 +338,11 @@
             resize();
             isRunning = true;
             
-            // 기본 설비
+            // 초기 설비
             spawn('solar', 'honam', 2);
             spawn('wind', 'jeju', 1);
             spawn('apt', 'seoul', 3);
 
-            // 튜토리얼 모드 시작
             startTutorial();
             gameLoop();
         }
@@ -367,10 +357,9 @@
             }
         }
 
-        // === Tutorial Logic (시나리오 기반) ===
+        // === Tutorial Logic ===
         function startTutorial() {
             mode = 'TUTORIAL';
-            // AI 버튼 잠금
             document.getElementById('btn-auto').style.pointerEvents = 'none';
             document.getElementById('btn-auto').style.opacity = '0.5';
             setTutorialStep(1);
@@ -381,19 +370,27 @@
             const guide = document.getElementById('guide-overlay');
             guide.style.display = 'block';
             
-            // 튜토리얼 상태 강제 설정
+            document.querySelectorAll('.ctrl-btn').forEach(b => {
+                b.style.pointerEvents = 'none'; b.style.opacity = '0.2';
+            });
+
             if(s === 1) {
-                guide.innerHTML = "🚨 [상황 1] 전력이 부족합니다! <b>[방전]</b> 버튼을 누르세요!";
-                // 강제로 부족하게 만듦
+                guide.innerHTML = "🚨 [상황 1] 전력 부족! <b>[방전]</b> 버튼을 누르세요!";
+                let btn = document.getElementById('btn-discharge');
+                btn.style.pointerEvents = 'auto'; btn.style.opacity = '1';
+                setAIText("전력 부족 발생! 방전이 필요합니다.", "alert");
+                // 강제 수급 불균형
                 targetDemand = 4000; targetSupply = 2000;
-                updateBtns(); // 버튼 상태 초기화
+                updateBtns();
             } 
             else if(s === 2) {
-                guide.innerHTML = "🚨 [상황 2] 전력이 과잉입니다! <b>[출력제어]</b>를 누르세요!";
-                // 강제로 남게 만듦
+                guide.innerHTML = "🚨 [상황 2] 전력 과잉! <b>[출력제어]</b>를 누르세요!";
+                let btn = document.getElementById('btn-cut');
+                btn.style.pointerEvents = 'auto'; btn.style.opacity = '1';
+                setAIText("발전량 과다! 출력제어가 필요합니다.", "alert");
+                // 강제 수급 불균형
                 targetDemand = 2000; targetSupply = 4000;
-                action = 'stop'; // 이전 액션 취소
-                updateBtns();
+                action = 'stop'; updateBtns();
             }
             else if(s === 3) {
                 guide.innerHTML = "🎉 튜토리얼 완료! 실전 모드로 전환됩니다.";
@@ -405,17 +402,16 @@
             if(mode !== 'TUTORIAL') return;
 
             if(step === 1) {
-                // 목표: 공급을 늘려라 (방전 or DR)
-                // 유저가 올바른 행동을 하면 공급이 늘어남 -> 주파수 회복
                 if(action === 'discharge' || drOn) {
-                    // 성공 연출: 주파수가 서서히 60으로 복귀
-                    if(freq > 59.8) setTutorialStep(2);
+                    // 올바른 행동 -> 주파수 회복 시뮬레이션
+                    setAIText("잘하셨습니다! 공급량이 늘어납니다.", "happy");
+                    if(freq > 59.5) setTutorialStep(2);
                 }
             }
             else if(step === 2) {
-                // 목표: 공급을 줄여라 (충전 or 출력제어)
                 if(action === 'charge' || cutOn) {
-                    if(freq < 60.2) setTutorialStep(3);
+                    setAIText("완벽합니다! 과잉 발전이 해소됩니다.", "happy");
+                    if(freq < 60.5) setTutorialStep(3);
                 }
             }
         }
@@ -423,20 +419,23 @@
         function endTutorial() {
             mode = 'REAL';
             document.getElementById('guide-overlay').style.display = 'none';
-            // AI 버튼 해제
             document.getElementById('btn-auto').style.pointerEvents = 'auto';
             document.getElementById('btn-auto').style.opacity = '1';
-            // 초기화
+            
+            // Reset
             action='stop'; drOn=false; cutOn=false; updateBtns();
             money = 5000; level = 1;
-            alert("✅ 실전 투입! 지금부터 예산이 관리됩니다.");
+            targetSupply = supply; targetDemand = demand; // 부드러운 전환
+            
+            setAIText("실전 모드 시작. 주파수를 60Hz로 유지하세요.", "neutral");
         }
 
-        // === Game Loop ===
+        // === Loop ===
         function gameLoop() {
             if(!isRunning) return;
             updatePhysics();
-            if(mode==='REAL') aiLogic();
+            
+            if(mode === 'REAL') aiLogic();
             else checkTutorialGoal();
             
             draw();
@@ -446,9 +445,9 @@
 
         function updatePhysics() {
             time += TICK_SPEED;
-            if(time>=1440) { time=0; if(mode==='REAL') handleLevelUp(); }
+            if(time >= 1440) { time=0; if(mode==='REAL') handleLevelUp(); }
 
-            // 증설 예보 처리
+            // Forecast Check
             if(pendingExpansion) {
                 pendingExpansion.timer--;
                 if(pendingExpansion.timer <= 0) {
@@ -458,7 +457,7 @@
                 }
             }
 
-            // 1. 물리량 계산 (목표값)
+            // 1. Calc Target Values
             if(mode === 'REAL') {
                 let h = time/60;
                 let curve = (h>9 && h<21) ? 1.3 : 0.7;
@@ -484,7 +483,7 @@
                 // ESS
                 essCap = 2000 + (level*300);
                 let flow = 0;
-                if(isAuto) autoControl(tSup, tDem); // AI 개입
+                if(isAuto) autoControl(tSup, tDem);
 
                 if(action==='charge') flow = -1000;
                 if(action==='discharge') flow = 1000;
@@ -493,48 +492,42 @@
                 essLevel = Math.max(0, Math.min(essLevel, essCap));
                 tSup += flow;
 
-                // Ramping (부드러운 변화)
                 targetDemand = tDem;
                 targetSupply = tSup;
             }
             else {
-                // 튜토리얼 모드: 유저 입력에 따라 목표값 강제 변경
+                // Tutorial Override Logic
                 if(step===1) {
-                    // 부족 상황
-                    if(action==='discharge' || drOn) targetSupply = 4000; // 회복
-                    else targetSupply = 2000; // 계속 부족
+                    if(action==='discharge') targetSupply = 4000; 
+                    else targetSupply = 2000;
                 }
                 if(step===2) {
-                    // 과잉 상황
-                    if(action==='charge' || cutOn) targetSupply = 2000; // 회복
-                    else targetSupply = 4000; // 계속 과잉
+                    if(cutOn) targetSupply = 2000;
+                    else targetSupply = 4000;
                 }
             }
 
-            // 실제 값 업데이트 (부드럽게)
+            // 2. Smooth Transition (Ramping)
             demand += (targetDemand - demand) * 0.1;
             supply += (targetSupply - supply) * 0.1;
 
-            // 주파수
+            // 3. Frequency
             let diff = supply - demand;
             freq += diff * 0.00005;
             freq += (60 - freq) * 0.05;
 
-            // 코인
+            // 4. Coin
             if(mode==='REAL' && freq>=59.9 && freq<=60.1 && Math.random()<0.1) coin++;
         }
 
         function handleLevelUp() {
             if(level<MAX_LEVEL) {
                 level++;
-                // 증설 예보
                 let t = ['solar','wind','apt','factory'][Math.floor(Math.random()*4)];
                 let r = ['honam','gangwon','seoul','yeongnam'][Math.floor(Math.random()*4)];
-                
                 let banner = document.getElementById('forecast-banner');
                 banner.innerText = `📢 [예보] 잠시 후 ${r}지역 ${t} 증설!`;
                 banner.style.display = 'block';
-                
                 pendingExpansion = { type:t, region:r, count:2, timer:300 };
             }
         }
@@ -553,26 +546,26 @@
         }
 
         function aiLogic() {
-            let box = document.getElementById('ai-box');
-            let txt = document.getElementById('ai-text');
-            let face = document.querySelector('.ai-face');
-            let msg = "안정적입니다.";
-            
-            if(supply > demand + 150) {
-                msg = "전력 과잉! [충전] 또는 [출력제어] 하세요.";
-                box.style.borderColor = "var(--danger)";
-                face.innerText = "😮";
-            } else if(supply < demand - 100) {
-                msg = "전력 부족! [방전] 또는 [DR] 하세요.";
-                box.style.borderColor = "var(--danger)";
-                face.innerText = "🚨";
-            } else {
-                box.style.borderColor = "var(--success)";
-                face.innerText = "🤖";
+            if(isAuto) {
+                setAIText("AI 자동 제어 중입니다. (안정적)", "happy");
+                return;
             }
             
-            if(isAuto) msg = "[AI 운전중] " + msg;
+            if(supply > demand + 150) setAIText("전력 과잉! [충전] 또는 [출력제어] 하세요.", "worry");
+            else if(supply < demand - 100) setAIText("전력 부족! [방전] 또는 [DR] 하세요.", "alert");
+            else setAIText("수급이 안정적입니다.", "neutral");
+        }
+
+        function setAIText(msg, mood) {
+            const box = document.getElementById('ai-box');
+            const txt = document.getElementById('ai-text');
+            const face = document.querySelector('.ai-face');
+            
             txt.innerText = msg;
+            if(mood==='alert') { box.style.borderColor='var(--danger)'; face.innerText='🚨'; }
+            else if(mood==='worry') { box.style.borderColor='var(--accent)'; face.innerText='😮'; }
+            else if(mood==='happy') { box.style.borderColor='var(--success)'; face.innerText='🤖'; }
+            else { box.style.borderColor='#444'; face.innerText='🤖'; }
         }
 
         // === Control ===
@@ -603,7 +596,6 @@
             let w=canvas.width; let h=canvas.height;
             ctx.clearRect(0,0,w,h);
 
-            // 연결선
             ctx.strokeStyle='rgba(255,255,255,0.1)'; ctx.lineWidth=2; ctx.beginPath();
             let c = getNodePos('chungcheong');
             nodes.forEach(n=>{
@@ -614,7 +606,6 @@
             let p1=getNodePos('honam'), p2=getNodePos('jeju'); ctx.moveTo(p1.x,p1.y); ctx.lineTo(p2.x,p2.y);
             ctx.stroke();
 
-            // 노드
             nodes.forEach(n=>{
                 let p=getNodePos(n.id);
                 ctx.beginPath(); ctx.arc(p.x, p.y, 50, 0, Math.PI*2);
@@ -625,7 +616,6 @@
                 ctx.fillText(n.name, p.x, p.y-10);
             });
 
-            // 아이콘
             objects.forEach(o=>{
                 let px=o.x*w; let py=o.y*h;
                 let icon = o.type==='solar'?'☀️':(o.type==='wind'?'🌀':(o.type==='apt'?'🏢':'🏭'));
