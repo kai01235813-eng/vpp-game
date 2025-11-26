@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>KEPCO VPP Training: Final Patch</title>
+    <title>KEPCO VPP Mobile Fix</title>
     <link href="https://fonts.googleapis.com/css2?family=Jua&family=Noto+Sans+KR:wght@500;700&display=swap" rel="stylesheet">
     <style>
         /* === UI 테마 === */
@@ -21,6 +21,7 @@
             margin: 0; overflow: hidden; background: var(--bg);
             font-family: 'Noto Sans KR', sans-serif; color: var(--text);
             display: flex; flex-direction: column; height: 100vh; user-select: none;
+            touch-action: manipulation; /* 터치 확대 방지 */
         }
 
         /* === 1. 인트로 PPT === */
@@ -30,87 +31,87 @@
             display: flex; justify-content: center; align-items: center;
         }
         .slide-card {
-            width: 800px; height: 550px; background: #fff; color: #333;
-            border-radius: 20px; padding: 40px; box-sizing: border-box;
+            width: 90%; max-width: 800px; height: 80%; max-height: 500px; background: #fff; color: #333;
+            border-radius: 20px; padding: 30px; box-sizing: border-box;
             display: none; flex-direction: column;
             box-shadow: 0 0 50px rgba(0, 210, 255, 0.5);
         }
-        .slide-card.active { display: flex; animation: fadeIn 0.3s; }
+        .slide-card.active { display: flex; }
         
         .slide-header { 
-            font-family: 'Jua', sans-serif; font-size: 32px; color: #0054a6; 
-            border-bottom: 3px solid #0054a6; padding-bottom: 15px; margin-bottom: 20px; flex-shrink: 0;
+            font-family: 'Jua', sans-serif; font-size: 28px; color: #0054a6; 
+            border-bottom: 3px solid #0054a6; padding-bottom: 10px; margin-bottom: 15px;
         }
         .slide-body { 
-            font-size: 18px; line-height: 1.6; flex: 1; 
+            font-size: 16px; line-height: 1.6; flex: 1; overflow-y: auto;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
         }
-        .slide-icon { font-size: 70px; margin-bottom: 20px; }
-        .slide-text-box { width: 100%; text-align: left; background: #f0f4f8; padding: 20px; border-radius: 10px; }
+        .slide-icon { font-size: 60px; margin-bottom: 15px; }
+        .slide-text-box { width: 100%; text-align: left; background: #f0f4f8; padding: 15px; border-radius: 10px; }
         
-        .slide-footer { margin-top: 20px; display: flex; justify-content: space-between; align-items: flex-end; flex-shrink: 0; }
-        .credits { font-size: 14px; color: #aaa; font-weight: bold; font-family: 'Consolas'; }
+        .slide-footer { margin-top: 15px; display: flex; justify-content: flex-end; gap: 10px; }
         
         .btn-ppt {
-            padding: 12px 30px; border: none; border-radius: 10px; font-size: 18px; 
+            padding: 12px 25px; border: none; border-radius: 8px; font-size: 16px; 
             background: #0054a6; color: white; font-family: 'Jua'; cursor: pointer;
         }
-        .btn-ppt:hover { background: #004080; }
-        .btn-start { background: var(--success); color: #000; box-shadow: 0 5px 15px rgba(0,230,118,0.4); }
-
-        @keyframes fadeIn { from{opacity:0; transform:translateY(10px)} to{opacity:1; transform:translateY(0)} }
+        .btn-start { background: var(--success); color: #000; }
 
         /* === 2. 메인 헤더 === */
         header {
-            height: 70px; background: #151a24; border-bottom: 2px solid var(--primary);
-            display: flex; align-items: center; justify-content: space-between; padding: 0 30px;
+            height: 60px; background: #151a24; border-bottom: 2px solid var(--primary);
+            display: flex; align-items: center; justify-content: space-between; padding: 0 20px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.3); z-index: 100;
         }
-        .logo { font-family: 'Jua'; font-size: 28px; color: #fff; }
+        .logo { font-family: 'Jua'; font-size: 24px; color: #fff; }
         .logo span { color: var(--primary); }
 
-        .status-bar { display: flex; gap: 30px; align-items: center; }
+        .status-bar { display: flex; gap: 20px; align-items: center; }
+        .metric { text-align: center; display: none; } /* 모바일 공간부족 시 숨김 */
+        @media (min-width: 600px) { .metric { display: block; } }
         
-        .coin-box {
-            display: flex; align-items: center; gap: 10px; background: rgba(255, 215, 0, 0.15);
-            padding: 6px 20px; border-radius: 30px; border: 2px solid gold;
-        }
-        .coin-svg { width: 24px; height: 24px; fill: gold; filter: drop-shadow(0 0 2px gold); }
-        .coin-text { font-size: 20px; font-weight: bold; color: gold; font-family: 'Consolas'; }
-
-        .metric { text-align: center; }
-        .metric label { font-size: 11px; color: #aaa; display: block; }
-        .metric span { font-size: 20px; font-weight: bold; font-family: 'Consolas'; }
+        .metric label { font-size: 10px; color: #aaa; display: block; }
+        .metric span { font-size: 18px; font-weight: bold; font-family: 'Consolas'; }
 
         /* === 3. 레이아웃 === */
-        #container { display: flex; flex: 1; height: 100%; overflow: hidden; }
+        #container { display: flex; flex: 1; height: 100%; overflow: hidden; flex-direction: row; }
+        /* 모바일 세로 모드 대응 */
+        @media (max-width: 768px) {
+            #container { flex-direction: column; }
+            #panel { width: 100% !important; height: 45%; border-left: none; border-top: 1px solid #333; }
+            #map-area { height: 55%; }
+        }
 
         /* 패널 */
         #panel {
-            width: 380px; background: var(--panel); border-right: 1px solid #333;
-            padding: 20px; display: flex; flex-direction: column; gap: 15px;
+            width: 360px; background: var(--panel); border-right: 1px solid #333;
+            padding: 15px; display: flex; flex-direction: column; gap: 10px;
             box-shadow: 5px 0 15px rgba(0,0,0,0.2); z-index: 10; overflow-y: auto;
         }
-        .card { background: #252d3d; padding: 15px; border-radius: 10px; border: 1px solid #333; }
-        .card-title { font-size: 15px; font-weight: bold; color: var(--primary); margin-bottom: 10px; border-bottom: 1px solid #444; padding-bottom: 5px; }
+        .card { background: #252d3d; padding: 12px; border-radius: 10px; border: 1px solid #333; }
+        .card-title { font-size: 14px; font-weight: bold; color: var(--primary); margin-bottom: 8px; border-bottom: 1px solid #444; padding-bottom: 4px; }
 
         /* AI 팁 */
         #ai-box {
-            background: #fff; color: #000; padding: 15px; border-radius: 15px;
-            border-left: 5px solid var(--primary); display: flex; align-items: center; gap: 15px;
-            min-height: 60px; transition: 0.3s; box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            background: #fff; color: #000; padding: 10px; border-radius: 10px;
+            border-left: 5px solid var(--primary); display: flex; align-items: center; gap: 10px;
+            min-height: 50px; transition: 0.3s;
         }
-        .ai-face { font-size: 35px; }
-        .ai-msg { font-weight: bold; font-size: 15px; line-height: 1.4; }
+        .ai-face { font-size: 30px; }
+        .ai-msg { font-weight: bold; font-size: 13px; line-height: 1.3; }
 
         /* 컨트롤 버튼 */
-        .btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+        .btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 5px; }
         .ctrl-btn {
             padding: 15px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;
-            color: #fff; opacity: 0.4; transition: 0.2s; font-family: 'Jua'; font-size: 15px;
+            color: #fff; opacity: 0.3; transition: 0.2s; font-family: 'Jua'; font-size: 14px;
+            pointer-events: none; /* 기본 잠금 */
         }
-        .ctrl-btn:hover { opacity: 0.8; }
-        .ctrl-btn.active { opacity: 1; transform: scale(1.05); box-shadow: 0 0 15px currentColor; }
+        /* 활성화 가능한 상태 스타일 */
+        .ctrl-btn.unlocked { opacity: 1; pointer-events: auto; cursor: pointer; box-shadow: 0 0 5px #fff; }
+        
+        .ctrl-btn:active { transform: scale(0.95); }
+        .ctrl-btn.active { opacity: 1; transform: scale(1.05); box-shadow: 0 0 15px currentColor; border: 2px solid #fff;}
         
         .c-charge { background: var(--danger); }
         .c-discharge { background: var(--success); }
@@ -118,36 +119,30 @@
         .c-cut { background: #ff9800; grid-column: span 2; }
 
         .ai-switch {
-            background: #333; color: #aaa; padding: 10px; border-radius: 8px; text-align: center;
-            cursor: pointer; font-weight: bold; border: 1px solid #555; margin-bottom: 10px;
+            background: #333; color: #aaa; padding: 8px; border-radius: 8px; text-align: center;
+            cursor: pointer; font-weight: bold; border: 1px solid #555; margin-bottom: 5px; font-size: 13px;
         }
-        .ai-switch.on { background: var(--success); color: #000; border-color: #fff; box-shadow: 0 0 15px var(--success); }
+        .ai-switch.on { background: var(--success); color: #000; border-color: #fff; }
 
         /* 지도 */
         #map-area {
             flex: 1; position: relative; background: radial-gradient(circle at 50% 50%, #1b263b 0%, #0b0c15 100%);
             overflow: hidden;
         }
-        canvas { display: block; width: 100%; height: 100%; cursor: default; }
+        canvas { display: block; width: 100%; height: 100%; }
 
-        /* 튜토리얼 가이드 (중앙) */
+        /* 튜토리얼 가이드 */
         #guide-overlay {
-            position: absolute; top: 30px; left: 50%; transform: translateX(-50%);
-            background: rgba(0,0,0,0.9); border: 2px solid var(--accent); color: #fff;
-            padding: 15px 40px; border-radius: 50px; font-size: 20px; font-weight: bold;
+            position: absolute; top: 20px; left: 50%; transform: translateX(-50%);
+            background: rgba(0,0,0,0.95); border: 2px solid var(--accent); color: #fff;
+            padding: 15px 30px; border-radius: 50px; font-size: 16px; font-weight: bold;
             box-shadow: 0 10px 30px rgba(0,0,0,0.8); pointer-events: none; display: none; z-index: 50;
-            white-space: nowrap; animation: pulse 2s infinite;
+            white-space: nowrap; text-align: center;
         }
-        @keyframes pulse { 0%{transform:translateX(-50%) scale(1);} 50%{transform:translateX(-50%) scale(1.05);} 100%{transform:translateX(-50%) scale(1);} }
 
-        /* 예보 배너 */
-        #forecast-banner {
-            position: absolute; top: 80px; left: 50%; transform: translateX(-50%);
-            background: rgba(255, 193, 7, 0.9); color: #000;
-            padding: 10px 30px; border-radius: 8px; font-weight: bold;
-            display: none; animation: slideDown 0.5s; z-index: 40;
-        }
-        @keyframes slideDown { from{top:-50px} to{top:80px} }
+        /* 설비 현황 */
+        .res-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; font-size: 12px; }
+        .res-item span:last-child { float: right; color: var(--success); font-weight: bold; }
 
     </style>
 </head>
@@ -155,61 +150,46 @@
 
     <div id="intro-overlay">
         <div class="slide-card active" id="slide-1">
-            <div class="slide-header">1. 가상발전소(VPP) 개요</div>
+            <div class="slide-header">1. KEPCO VPP 교육</div>
             <div class="slide-body">
-                <div class="slide-icon">🔌 + ☀️ = 🏭</div>
+                <div class="slide-icon">🎓</div>
                 <div class="slide-text-box">
-                    <b>[정의]</b><br>
-                    ICT 기술을 이용해 분산된 소규모 에너지를 연결하여<br>
-                    하나의 발전소처럼 운영하는 시스템입니다.<br><br>
-                    <b>[목적]</b><br>
-                    재생에너지의 불안정함을 <b>ESS(저장장치)</b>와 <b>제어 기술</b>로 보완하여<br>
-                    전력망을 안정적으로 유지합니다.
+                    본 프로그램은 <b>가상발전소(VPP) 운영 기초</b>를 학습합니다.<br>
+                    화면을 터치하여 진행하세요.<br><br>
+                    (MADE BY SONG)
                 </div>
             </div>
-            <div class="slide-footer">
-                <div class="credits">MADE BY SONG</div>
-                <button class="btn-ppt" onclick="nextSlide(2)">다음 ▶</button>
-            </div>
+            <div class="slide-footer"><button class="btn-ppt" onclick="nextSlide(2)">다음 ▶</button></div>
         </div>
         <div class="slide-card" id="slide-2">
             <div class="slide-header">2. 한전의 역할</div>
             <div class="slide-body">
                 <div class="slide-icon">⚖️</div>
                 <div class="slide-text-box">
-                    전력은 <b>생산과 소비가 동시에</b> 이루어져야 합니다.<br>
-                    균형이 깨지면 <b>주파수(60Hz)</b>가 흔들립니다.<br><br>
-                    <b>[운영자의 임무]</b><br>
-                    - 공급 < 수요 : <b>정전 위험!</b> (전력을 공급하거나 소비를 줄임)<br>
-                    - 공급 > 수요 : <b>과부하 위험!</b> (전력을 저장하거나 발전을 줄임)
+                    전력망의 <b>수급 균형</b>을 맞춰야 합니다.<br>
+                    - 부족하면: <b>방전</b> 또는 <b>DR</b><br>
+                    - 남으면: <b>충전</b> 또는 <b>출력제어</b>
                 </div>
             </div>
             <div class="slide-footer">
-                <div class="credits"></div>
-                <div>
-                    <button class="btn-ppt" onclick="nextSlide(1)">◀ 이전</button>
-                    <button class="btn-ppt" onclick="nextSlide(3)">다음 ▶</button>
-                </div>
+                <button class="btn-ppt" onclick="nextSlide(1)">◀ 이전</button>
+                <button class="btn-ppt" onclick="nextSlide(3)">다음 ▶</button>
             </div>
         </div>
         <div class="slide-card" id="slide-3">
-            <div class="slide-header">3. 조작 방법 (중요!)</div>
+            <div class="slide-header">3. 게임 방법</div>
             <div class="slide-body">
-                <div class="slide-icon">🎛️</div>
+                <div class="slide-icon">🎮</div>
                 <div class="slide-text-box">
-                    이 게임은 <b>건설은 자동</b>, <b>제어는 수동</b>입니다.<br><br>
-                    <b>[위기 대응 매뉴얼]</b><br>
-                    🔴 <b>전력 부족 시:</b> [방전] 또는 [DR(부하감축)]<br>
-                    🔵 <b>전력 과잉 시:</b> [충전] 또는 [출력제어]<br><br>
-                    ※ 튜토리얼을 통해 직접 실습해 봅시다.
+                    1. 설비는 <b>자동</b>으로 늘어납니다.<br>
+                    2. <b>AI 팁</b>을 보고 버튼을 누르세요.<br>
+                    3. <b>튜토리얼</b>을 먼저 완료해야 합니다.<br><br>
+                    준비되셨습니까?
                 </div>
             </div>
             <div class="slide-footer">
-                <div class="credits"></div>
-                <div>
-                    <button class="btn-ppt" onclick="nextSlide(2)">◀ 이전</button>
-                    <button class="btn-ppt btn-start" onclick="startGame()">튜토리얼 시작 🚀</button>
-                </div>
+                <button class="btn-ppt" onclick="nextSlide(2)">◀ 이전</button>
+                <button class="btn-ppt btn-start" onclick="startGame()">튜토리얼 시작 🚀</button>
             </div>
         </div>
     </div>
@@ -217,16 +197,8 @@
     <header>
         <div class="logo">⚡ KEPCO <span>VPP</span></div>
         <div class="status-bar">
-            <div class="coin-box">
-                <svg class="coin-svg" viewBox="0 0 24 24"><path d="M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M12,5.5A6.5,6.5 0 0,0 5.5,12A6.5,6.5 0 0,0 12,18.5A6.5,6.5 0 0,0 18.5,12A6.5,6.5 0 0,0 12,5.5M12,7A5,5 0 0,1 17,12A5,5 0 0,1 12,17A5,5 0 0,1 7,12A5,5 0 0,1 12,7Z" /></svg>
-                <span class="coin-text" id="ui-coin">0</span>
-            </div>
-            <div class="metric">
-                <label>LEVEL</label> <span id="ui-level">1</span>
-            </div>
-            <div class="metric">
-                <label>FREQ</label> <span id="ui-freq" style="color:var(--primary)">60.00</span> Hz
-            </div>
+            <div class="metric"><label>LEVEL</label><span id="ui-level">1</span></div>
+            <div class="metric"><label>FREQ</label><span id="ui-freq" style="color:var(--primary)">60.00</span>Hz</div>
         </div>
     </header>
 
@@ -238,14 +210,14 @@
             </div>
 
             <div class="ai-switch" id="btn-auto" onclick="toggleAuto()">
-                ● AI 자동 운전 (Click)
+                ● AI 자동 운전 (OFF)
             </div>
 
             <div class="card">
                 <div class="card-title">📊 실시간 수급</div>
                 <div class="res-grid">
-                    <span>⚡ 공급(G)</span> <span id="val-sup" style="font-weight:bold; color:var(--success); font-family:Consolas;">0</span>
-                    <span>🏢 수요(L)</span> <span id="val-dem" style="font-weight:bold; color:var(--danger); font-family:Consolas;">0</span>
+                    <span>⚡ 공급 <span id="val-sup" style="color:var(--success)">0</span></span>
+                    <span>🏢 수요 <span id="val-dem" style="color:var(--danger)">0</span></span>
                 </div>
             </div>
 
@@ -257,21 +229,15 @@
                     <button class="ctrl-btn c-dr" id="btn-dr" onclick="toggleDR()">🏭 DR 발령</button>
                     <button class="ctrl-btn c-cut" id="btn-cut" onclick="toggleCut()">✂️ 출력제어</button>
                 </div>
-                <div style="margin-top:10px; font-size:12px; color:#aaa;">
-                    ESS: <span id="val-soc">50%</span>
-                    <div style="width:100%; height:6px; background:#000; margin-top:3px; border-radius:3px;">
-                        <div id="bar-soc" style="width:50%; height:100%; background:var(--success); transition:0.3s;"></div>
-                    </div>
-                </div>
             </div>
 
             <div class="card">
-                <div class="card-title">🏗️ 설비 (자동증설)</div>
+                <div class="card-title">🏗️ 설비 현황 (자동증설)</div>
                 <div class="res-grid">
-                    <div>☀️ 태양광 <span id="cnt-solar" style="color:var(--success)">0</span></div>
-                    <div>🌀 풍력 <span id="cnt-wind" style="color:var(--success)">0</span></div>
-                    <div>🏢 아파트 <span id="cnt-apt" style="color:var(--danger)">0</span></div>
-                    <div>🏭 공장 <span id="cnt-fac" style="color:var(--danger)">0</span></div>
+                    <span>☀️ 태양광 <span id="cnt-solar">0</span></span>
+                    <span>🌀 풍력 <span id="cnt-wind">0</span></span>
+                    <span>🏢 아파트 <span id="cnt-apt">0</span></span>
+                    <span>🏭 공장 <span id="cnt-fac">0</span></span>
                 </div>
             </div>
         </div>
@@ -279,7 +245,6 @@
         <div id="map-area">
             <canvas id="gameCanvas"></canvas>
             <div id="guide-overlay"></div>
-            <div id="forecast-banner"></div>
         </div>
     </div>
 
@@ -294,23 +259,20 @@
         // === State ===
         let isRunning = false;
         let isAuto = false;
-        let mode = 'PPT';
+        let mode = 'PPT'; 
         let step = 0;
 
         let time = 720; 
         let level = 1;
-        let coin = 0;
         let freq = 60.00;
 
         let supply = 0, demand = 0;
-        let targetSupply = 0, targetDemand = 0; // Ramping용
+        let targetSupply = 0, targetDemand = 0; 
         
         let essCap = 2000, essLevel = 1000;
         let action = 'stop', drOn = false, cutOn = false;
 
-        let pendingExpansion = null;
-
-        // Map Data
+        // Map
         const nodes = [
             {id:'seoul', name:'수도권', x:0.35, y:0.25, color:'#ef5350'},
             {id:'gangwon', name:'강원', x:0.7, y:0.2, color:'#42a5f5'},
@@ -321,7 +283,7 @@
         ];
         let objects = [];
 
-        // === System ===
+        // === 초기화 ===
         function resize() {
             canvas.width = document.getElementById('map-area').clientWidth;
             canvas.height = document.getElementById('map-area').clientHeight;
@@ -338,7 +300,6 @@
             resize();
             isRunning = true;
             
-            // 초기 설비
             spawn('solar', 'honam', 2);
             spawn('wind', 'jeju', 1);
             spawn('apt', 'seoul', 3);
@@ -357,9 +318,10 @@
             }
         }
 
-        // === Tutorial Logic ===
+        // === 튜토리얼 핵심 로직 ===
         function startTutorial() {
             mode = 'TUTORIAL';
+            // AI 버튼 잠금
             document.getElementById('btn-auto').style.pointerEvents = 'none';
             document.getElementById('btn-auto').style.opacity = '0.5';
             setTutorialStep(1);
@@ -370,74 +332,110 @@
             const guide = document.getElementById('guide-overlay');
             guide.style.display = 'block';
             
+            // 모든 버튼 잠금
             document.querySelectorAll('.ctrl-btn').forEach(b => {
-                b.style.pointerEvents = 'none'; b.style.opacity = '0.2';
+                b.classList.remove('unlocked');
+                b.classList.remove('active');
             });
 
             if(s === 1) {
-                guide.innerHTML = "🚨 [상황 1] 전력 부족! <b>[방전]</b> 버튼을 누르세요!";
+                guide.innerHTML = "🚨 전력 부족! <b>[방전]</b> 버튼을 누르세요!";
+                // 방전 버튼만 잠금 해제
                 let btn = document.getElementById('btn-discharge');
-                btn.style.pointerEvents = 'auto'; btn.style.opacity = '1';
-                setAIText("전력 부족 발생! 방전이 필요합니다.", "alert");
-                // 강제 수급 불균형
-                targetDemand = 4000; targetSupply = 2000;
-                updateBtns();
+                btn.classList.add('unlocked');
+                
+                setAIText("전력이 부족합니다. 방전이 필요해요!", "alert");
+                targetDemand = 4000; targetSupply = 2000; // 강제 상황
             } 
             else if(s === 2) {
-                guide.innerHTML = "🚨 [상황 2] 전력 과잉! <b>[출력제어]</b>를 누르세요!";
+                guide.innerHTML = "🚨 전력 과잉! <b>[출력제어]</b>를 누르세요!";
                 let btn = document.getElementById('btn-cut');
-                btn.style.pointerEvents = 'auto'; btn.style.opacity = '1';
-                setAIText("발전량 과다! 출력제어가 필요합니다.", "alert");
-                // 강제 수급 불균형
-                targetDemand = 2000; targetSupply = 4000;
-                action = 'stop'; updateBtns();
+                btn.classList.add('unlocked');
+                
+                setAIText("발전량이 너무 많아요! 출력제어 하세요.", "alert");
+                targetDemand = 2000; targetSupply = 4000; // 강제 상황
+                action = 'stop'; // 이전 액션 취소
+                updateBtns();
             }
             else if(s === 3) {
-                guide.innerHTML = "🎉 튜토리얼 완료! 실전 모드로 전환됩니다.";
-                setTimeout(endTutorial, 3000);
-            }
-        }
-
-        function checkTutorialGoal() {
-            if(mode !== 'TUTORIAL') return;
-
-            if(step === 1) {
-                if(action === 'discharge' || drOn) {
-                    // 올바른 행동 -> 주파수 회복 시뮬레이션
-                    setAIText("잘하셨습니다! 공급량이 늘어납니다.", "happy");
-                    if(freq > 59.5) setTutorialStep(2);
-                }
-            }
-            else if(step === 2) {
-                if(action === 'charge' || cutOn) {
-                    setAIText("완벽합니다! 과잉 발전이 해소됩니다.", "happy");
-                    if(freq < 60.5) setTutorialStep(3);
-                }
+                guide.innerHTML = "🎉 튜토리얼 완료! 실전 모드 전환...";
+                setTimeout(endTutorial, 2000);
             }
         }
 
         function endTutorial() {
             mode = 'REAL';
             document.getElementById('guide-overlay').style.display = 'none';
+            
+            // 모든 버튼 해제
+            document.querySelectorAll('.ctrl-btn').forEach(b => b.classList.add('unlocked'));
             document.getElementById('btn-auto').style.pointerEvents = 'auto';
             document.getElementById('btn-auto').style.opacity = '1';
             
-            // Reset
+            // 초기화
             action='stop'; drOn=false; cutOn=false; updateBtns();
-            money = 5000; level = 1;
-            targetSupply = supply; targetDemand = demand; // 부드러운 전환
+            level = 1;
+            targetSupply = supply; targetDemand = demand;
             
             setAIText("실전 모드 시작. 주파수를 60Hz로 유지하세요.", "neutral");
         }
 
-        // === Loop ===
+        // === 버튼 입력 처리 (즉시 반응) ===
+        function manual(act) {
+            if(isAuto) return;
+            
+            // 튜토리얼 체크: 올바른 버튼인지 확인
+            if(mode === 'TUTORIAL') {
+                if(step === 1 && act !== 'discharge') return; // 1단계는 방전만 가능
+                // 2단계는 출력제어만 가능 (manual함수 아님)
+            }
+
+            action = (action === act) ? 'stop' : act;
+            updateBtns();
+
+            // 튜토리얼 진행 트리거
+            if(mode === 'TUTORIAL' && step === 1 && action === 'discharge') {
+                setTutorialStep(2);
+            }
+        }
+
+        function toggleDR() { if(!isAuto && mode==='REAL') { drOn=!drOn; updateBtns(); } }
+        
+        function toggleCut() { 
+            if(isAuto) return;
+            // 튜토리얼 2단계 체크
+            if(mode === 'TUTORIAL') {
+                if(step === 2) {
+                    cutOn = !cutOn;
+                    updateBtns();
+                    if(cutOn) setTutorialStep(3);
+                    return;
+                }
+                return; // 다른 단계에선 불가
+            }
+            cutOn = !cutOn; updateBtns();
+        }
+
+        function toggleAuto() {
+            isAuto = !isAuto;
+            let btn = document.getElementById('btn-auto');
+            btn.classList.toggle('on', isAuto);
+            if(!isAuto) { action='stop'; drOn=false; cutOn=false; updateBtns(); }
+        }
+
+        function updateBtns() {
+            document.querySelectorAll('.ctrl-btn').forEach(b=>b.classList.remove('active'));
+            if(action==='charge') document.getElementById('btn-charge').classList.add('active');
+            if(action==='discharge') document.getElementById('btn-discharge').classList.add('active');
+            if(drOn) document.getElementById('btn-dr').classList.add('active');
+            if(cutOn) document.getElementById('btn-cut').classList.add('active');
+        }
+
+        // === Game Loop ===
         function gameLoop() {
             if(!isRunning) return;
             updatePhysics();
-            
             if(mode === 'REAL') aiLogic();
-            else checkTutorialGoal();
-            
             draw();
             updateUI();
             requestAnimationFrame(gameLoop);
@@ -447,17 +445,7 @@
             time += TICK_SPEED;
             if(time >= 1440) { time=0; if(mode==='REAL') handleLevelUp(); }
 
-            // Forecast Check
-            if(pendingExpansion) {
-                pendingExpansion.timer--;
-                if(pendingExpansion.timer <= 0) {
-                    spawn(pendingExpansion.type, pendingExpansion.region, pendingExpansion.count);
-                    document.getElementById('forecast-banner').style.display='none';
-                    pendingExpansion = null;
-                }
-            }
-
-            // 1. Calc Target Values
+            // 1. 값 계산
             if(mode === 'REAL') {
                 let h = time/60;
                 let curve = (h>9 && h<21) ? 1.3 : 0.7;
@@ -480,65 +468,43 @@
                 let tSup = baseGen + reGen;
                 if(cutOn) tSup *= 0.7;
 
-                // ESS
-                essCap = 2000 + (level*300);
-                let flow = 0;
+                // ESS & Auto
                 if(isAuto) autoControl(tSup, tDem);
 
+                let flow = 0;
                 if(action==='charge') flow = -1000;
                 if(action==='discharge') flow = 1000;
                 
-                essLevel -= flow * 0.03;
-                essLevel = Math.max(0, Math.min(essLevel, essCap));
                 tSup += flow;
-
                 targetDemand = tDem;
                 targetSupply = tSup;
             }
-            else {
-                // Tutorial Override Logic
-                if(step===1) {
-                    if(action==='discharge') targetSupply = 4000; 
-                    else targetSupply = 2000;
-                }
-                if(step===2) {
-                    if(cutOn) targetSupply = 2000;
-                    else targetSupply = 4000;
-                }
-            }
+            // 튜토리얼 모드에선 목표값 고정 (setTutorialStep에서 설정)
 
-            // 2. Smooth Transition (Ramping)
+            // 2. Ramping (부드러운 변화)
             demand += (targetDemand - demand) * 0.1;
             supply += (targetSupply - supply) * 0.1;
 
-            // 3. Frequency
+            // 3. 주파수
             let diff = supply - demand;
             freq += diff * 0.00005;
             freq += (60 - freq) * 0.05;
-
-            // 4. Coin
-            if(mode==='REAL' && freq>=59.9 && freq<=60.1 && Math.random()<0.1) coin++;
         }
 
         function handleLevelUp() {
-            if(level<MAX_LEVEL) {
+            if(level<20) {
                 level++;
-                let t = ['solar','wind','apt','factory'][Math.floor(Math.random()*4)];
-                let r = ['honam','gangwon','seoul','yeongnam'][Math.floor(Math.random()*4)];
-                let banner = document.getElementById('forecast-banner');
-                banner.innerText = `📢 [예보] 잠시 후 ${r}지역 ${t} 증설!`;
-                banner.style.display = 'block';
-                pendingExpansion = { type:t, region:r, count:2, timer:300 };
+                spawn('apt', 'seoul', 2);
+                spawn('solar', 'honam', 1);
+                if(level%3===0) spawn('wind', 'jeju', 1);
             }
         }
 
         function autoControl(g, l) {
             if(g > l + 150) {
-                if(essLevel < essCap) { action='charge'; cutOn=false; }
-                else { action='stop'; cutOn=true; }
+                action='charge'; cutOn=false;
             } else if(g < l - 100) {
-                if(essLevel > 0) { action='discharge'; drOn=false; }
-                else { action='stop'; drOn=true; }
+                action='discharge'; drOn=false;
             } else {
                 action='stop'; cutOn=false; drOn=false;
             }
@@ -546,10 +512,7 @@
         }
 
         function aiLogic() {
-            if(isAuto) {
-                setAIText("AI 자동 제어 중입니다. (안정적)", "happy");
-                return;
-            }
+            if(isAuto) { setAIText("AI 자동 제어 중 (안정적)", "happy"); return; }
             
             if(supply > demand + 150) setAIText("전력 과잉! [충전] 또는 [출력제어] 하세요.", "worry");
             else if(supply < demand - 100) setAIText("전력 부족! [방전] 또는 [DR] 하세요.", "alert");
@@ -566,29 +529,6 @@
             else if(mood==='worry') { box.style.borderColor='var(--accent)'; face.innerText='😮'; }
             else if(mood==='happy') { box.style.borderColor='var(--success)'; face.innerText='🤖'; }
             else { box.style.borderColor='#444'; face.innerText='🤖'; }
-        }
-
-        // === Control ===
-        function toggleAuto() {
-            isAuto = !isAuto;
-            let btn = document.getElementById('btn-auto');
-            btn.classList.toggle('on', isAuto);
-            if(!isAuto) { action='stop'; drOn=false; cutOn=false; updateBtns(); }
-        }
-
-        function manual(act) {
-            if(isAuto) return;
-            action = (action===act)?'stop':act; updateBtns();
-        }
-        function toggleDR() { if(!isAuto) { drOn=!drOn; updateBtns(); } }
-        function toggleCut() { if(!isAuto) { cutOn=!cutOn; updateBtns(); } }
-
-        function updateBtns() {
-            document.querySelectorAll('.ctrl-btn').forEach(b=>b.classList.remove('active'));
-            if(action==='charge') document.getElementById('btn-charge').classList.add('active');
-            if(action==='discharge') document.getElementById('btn-discharge').classList.add('active');
-            if(drOn) document.getElementById('btn-dr').classList.add('active');
-            if(cutOn) document.getElementById('btn-cut').classList.add('active');
         }
 
         // === Drawing ===
@@ -631,12 +571,7 @@
         }
 
         function updateUI() {
-            let hh=Math.floor(time/60).toString().padStart(2,'0');
-            let mm=Math.floor(time%60).toString().padStart(2,'0');
-            document.getElementById('ui-time').innerText = `${hh}:${mm}`;
             document.getElementById('ui-level').innerText = level;
-            document.getElementById('ui-coin').innerText = coin;
-
             let fEl = document.getElementById('ui-freq');
             fEl.innerText = freq.toFixed(2);
             fEl.style.color = (freq<59.8||freq>60.2) ? 'var(--danger)' : 'var(--primary)';
@@ -644,10 +579,6 @@
             document.getElementById('val-sup').innerText = Math.floor(supply);
             document.getElementById('val-dem').innerText = Math.floor(demand);
             
-            let soc = Math.floor(essLevel/essCap*100);
-            document.getElementById('val-soc').innerText = soc + "%";
-            document.getElementById('bar-soc').style.width = soc + "%";
-
             document.getElementById('cnt-solar').innerText = objects.filter(o=>o.type==='solar').length;
             document.getElementById('cnt-wind').innerText = objects.filter(o=>o.type==='wind').length;
             document.getElementById('cnt-apt').innerText = objects.filter(o=>o.type==='apt').length;
