@@ -445,7 +445,40 @@
             setAIText("실전 모드 시작. 주파수를 60Hz로 유지하세요.", "neutral");
             handleLevelUp();
         }
-
+        function toggleAuto() {
+            // 자동 운전 상태 변경
+            isAuto = !isAuto;
+        
+            const btn = document.getElementById("btn-auto");
+            const aiText = document.getElementById("ai-text");
+        
+            if (isAuto) {
+                // ON 상태 UI
+                btn.classList.add("on");
+                btn.innerText = "● AI 자동 운전 (ON)";
+                aiText.innerText = "AI 자동운전 모드 활성화됨";
+        
+                // 수동 버튼 잠금
+                document.querySelectorAll(".ctrl-btn").forEach(b => {
+                    b.classList.remove("unlocked");
+                    b.style.opacity = 0.4;
+                    b.style.pointerEvents = "none";
+                });
+        
+            } else {
+                // OFF 상태 UI
+                btn.classList.remove("on");
+                btn.innerText = "● AI 자동 운전 (OFF)";
+                aiText.innerText = "수동 운전 모드";
+        
+                // 수동 버튼 활성화
+                document.querySelectorAll(".ctrl-btn").forEach(b => {
+                    b.classList.add("unlocked");
+                    b.style.opacity = 1;
+                    b.style.pointerEvents = "auto";
+                });
+            }
+        }
         function manual(act) {
             if (isAuto) return;
         
