@@ -403,6 +403,27 @@
 
                 targetDemand = tDem; targetSupply = tSup;
             }
+            else {
+                // --- [수정됨] 튜토리얼 모드 로직 ---
+                // 튜토리얼 단계별로 목표값을 강제로 설정하여 0이 되지 않게 함
+                if(step === 1) { 
+                    // 상황 1: 전력 부족 (방전 필요)
+                    targetDemand = 4000; 
+                    if(action === 'discharge') targetSupply = 4000; // 방전하면 해결
+                    else targetSupply = 2000; // 아니면 부족
+                }
+                else if(step === 2) {
+                    // 상황 2: 전력 과잉 (출력제어 필요)
+                    targetDemand = 2000;
+                    if(cutOn) targetSupply = 2000; // 제어하면 해결
+                    else targetSupply = 4000; // 아니면 과잉
+                }
+                else {
+                    // 그 외 대기 상태 (안정적)
+                    targetDemand = 3000;
+                    targetSupply = 3000;
+                }
+            }
 
             demand += (targetDemand - demand) * 0.1;
             supply += (targetSupply - supply) * 0.1;
