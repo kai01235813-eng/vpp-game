@@ -242,7 +242,6 @@
         <div id="map-area">
             <canvas id="gameCanvas"></canvas>
             <div id="guide-overlay"></div>
-            <div id="forecast-banner"></div>
         </div>
     </div>
 
@@ -266,13 +265,38 @@
             autoExpansion();
         }, 10000); // 10초 (원하는 속도로 조절)
 
-        function autoExpansion() {
-            // 지역별 확률적으로 설비 자동 증가
-            spawn('solar', 'honam', Math.random() < 0.3 ? 1 : 0);
-            spawn('wind', 'jeju', Math.random() < 0.2 ? 1 : 0);
-            spawn('apt', 'seoul', Math.random() < 0.25 ? 1 : 0);
-            spawn('factory', 'yeongnam', Math.random() < 0.2 ? 1 : 0);
+   function autoExpansion() {
+        let messages = [];
+    
+        // 태양광
+        if (Math.random() < 0.3) {
+            spawn('solar', 'honam', 1);
+            messages.push("☀️ 호남 태양광 +1");
         }
+    
+        // 풍력
+        if (Math.random() < 0.2) {
+            spawn('wind', 'jeju', 1);
+            messages.push("🌀 제주 풍력 +1");
+        }
+    
+        // 아파트
+        if (Math.random() < 0.25) {
+            spawn('apt', 'seoul', 1);
+            messages.push("🏢 서울 아파트 +1");
+        }
+    
+        // 공장
+        if (Math.random() < 0.2) {
+            spawn('factory', 'yeongnam', 1);
+            messages.push("🏭 영남 공장 +1");
+        }
+    
+        // 설비가 실제로 증가한 경우만 배너 표시
+        if (messages.length > 0) {
+            showBanner(messages.join(" | "), "info");
+        }
+    }
 
         const nodes = [
             {id:'seoul', name:'수도권', x:0.35, y:0.25, c:'#ef5350'}, {id:'gangwon', name:'강원', x:0.7, y:0.2, c:'#42a5f5'},
@@ -296,6 +320,25 @@
         function spawn(type, rid, count=1) {
             let n = nodes.find(x=>x.id===rid); if(!n)return;
             for(let i=0; i<count; i++) objects.push({type:type, x:n.x+(Math.random()-.5)*0.15, y:n.y+(Math.random()-.5)*0.15, phase:Math.random()*10});
+        }
+
+        function showBanner(msg, type="warn") {
+            const b = document.getElementById('forecast-banner');
+            b.innerText = msg;
+        
+            if (type === "warn") {
+                b.style.background = "rgba(255,193,7,0.9)";
+            } else if (type === "alert") {
+                b.style.background = "rgba(255,82,82,0.9)";
+            } else {
+                b.style.background = "rgba(0,210,255,0.9)";
+            }
+        
+            b.style.display = "block";
+        
+            setTimeout(() => {
+                b.style.display = "none";
+            }, 3000);
         }
 
         function startTutorial() {
