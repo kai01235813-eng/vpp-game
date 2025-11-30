@@ -338,12 +338,39 @@
         }
 
         function manual(act) {
-            if(isAuto) return;
-            if(mode === 'TUTORIAL') {
-                if(step===1 && act==='discharge') { action='discharge'; updateBtns(); setAIText("성공! 공급이 늘어납니다.", "happy"); setTimeout(()=>setTutorialStep(2),800); }
+            if (isAuto) return;
+        
+            if (mode === 'TUTORIAL') {
+        
+                // Step 1 : 방전(discharge) 누르기
+                if (step === 1 && act === 'discharge') {
+                    action = 'discharge';
+                    updateBtns();
+                    setAIText("성공! 공급이 늘어납니다.", "happy");
+                    setTimeout(() => setTutorialStep(2), 800);
+                    return;
+                }
+        
+                // Step 2 : CUT 누르기
+                if (step === 2 && act === 'cut') {
+                    cutOn = true;
+                    updateBtns();
+                    setAIText("좋아요! 과부하를 줄였습니다.", "happy");
+                    setTimeout(() => setTutorialStep(3), 800);
+                    return;
+                }
+        
+                // Step 3 : 튜토리얼 종료 → REAL 모드 진입
+                if (step === 3) {
+                    return; // 버튼 입력 막기 (튜토리얼 끝 안내 중)
+                }
+        
                 return;
             }
-            action = (action===act) ? 'stop' : act; updateBtns();
+        
+            // REAL 모드: 토글 동작
+            action = (action === act) ? 'stop' : act;
+            updateBtns();
         }
 
         function toggleDR() { if(!isAuto && mode==='REAL') { DROn=!DROn; updateBtns(); } }
