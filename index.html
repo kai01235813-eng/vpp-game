@@ -466,6 +466,15 @@
                 sw.innerText = "● AI 자동 운전 (OFF)";
                 document.getElementById('ai-text').innerText = "수동 운전 모드";
             }
+
+            setTimeout(() => {
+                const sw = document.getElementById("btn-auto");
+                if (isAuto) {
+                    sw.innerText = "● AI 자동 운전 (ON)";
+                } else {
+                    sw.innerText = "● AI 자동 운전 (OFF)";
+                }
+            }, 5);
         }
         function manual(act) {
             if (isAuto) return;
