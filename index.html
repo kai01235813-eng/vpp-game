@@ -3,70 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>KEPCO VPP Ultimate Fix</title>
+    <title>KEPCO VPP Final</title>
     <link href="https://fonts.googleapis.com/css2?family=Jua&family=Noto+Sans+KR:wght@500;700&display=swap" rel="stylesheet">
     <style>
-        /* === UI 테마 === */
-        :root {
-            --bg: #101418; --panel: #1c232e; --primary: #00d2ff;
-            --accent: #ffc107; --danger: #ff5252; --success: #00e676; --text: #ffffff;
-        }
+        :root { --bg: #101418; --panel: #1c232e; --primary: #00d2ff; --accent: #ffc107; --danger: #ff5252; --success: #00e676; --text: #ffffff; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body {
-            margin: 0; overflow: hidden; background: var(--bg);
-            font-family: 'Noto Sans KR', sans-serif; color: var(--text);
-            display: flex; flex-direction: column; height: 100vh; user-select: none;
-        }
+        body { margin: 0; overflow: hidden; background: var(--bg); font-family: 'Noto Sans KR', sans-serif; color: var(--text); display: flex; flex-direction: column; height: 100vh; user-select: none; }
 
-        /* === PPT & Modal === */
-        #intro-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.98); z-index: 9999;
-            display: flex; justify-content: center; align-items: center;
-        }
-        .slide-card {
-            width: 90%; max-width: 800px; height: 85%; max-height: 600px; background: #fff; color: #333;
-            border-radius: 20px; padding: 30px; display: none; flex-direction: column;
-            box-shadow: 0 0 50px rgba(0, 210, 255, 0.5);
-        }
+        /* PPT */
+        #intro-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.98); z-index: 9999; display: flex; justify-content: center; align-items: center; }
+        .slide-card { width: 90%; max-width: 800px; height: 85%; background: #fff; color: #333; border-radius: 20px; padding: 30px; display: none; flex-direction: column; box-shadow: 0 0 50px rgba(0, 210, 255, 0.5); }
         .slide-card.active { display: flex; animation: fadeIn 0.3s; }
-        .slide-header { font-family: 'Jua'; font-size: 28px; color: #0054a6; border-bottom: 3px solid #0054a6; padding-bottom: 15px; margin-bottom: 15px; }
+        .slide-header { font-family: 'Jua', sans-serif; font-size: 28px; color: #0054a6; border-bottom: 3px solid #0054a6; padding-bottom: 15px; margin-bottom: 15px; flex-shrink: 0; }
         .slide-body { font-size: 16px; line-height: 1.6; flex: 1; overflow-y: auto; display: flex; flex-direction: column; justify-content: center; align-items: center; }
         .slide-text-box { width: 100%; text-align: left; background: #f0f4f8; padding: 20px; border-radius: 10px; }
-        .slide-footer { margin-top: 20px; display: flex; justify-content: flex-end; gap: 15px; }
-        .credits { font-family: 'Consolas'; font-weight: bold; color: #aaa; font-size: 12px; align-self: center; margin-right: auto; }
+        .slide-footer { margin-top: 20px; display: flex; justify-content: flex-end; gap: 15px; flex-shrink: 0; }
         .btn-ppt { padding: 12px 25px; border: none; border-radius: 10px; font-size: 18px; background: #0054a6; color: white; font-family: 'Jua'; cursor: pointer; }
         .btn-start { background: var(--success); color: #000; }
         @keyframes fadeIn { from{opacity:0} to{opacity:1} }
 
-        /* === Header === */
-        header {
-            height: 60px; background: #151a24; border-bottom: 2px solid var(--primary);
-            display: flex; align-items: center; justify-content: space-between; padding: 0 20px; z-index: 100;
-        }
-        .logo { font-family: 'Jua'; font-size: 22px; color: #fff; display: flex; align-items: center; gap: 5px; }
-        .logo span { color: var(--primary); }
+        /* Header */
+        header { height: 60px; background: #151a24; border-bottom: 2px solid var(--primary); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; z-index: 100; flex-shrink: 0; }
+        .logo { font-family: 'Jua'; font-size: 22px; color: #fff; } .logo span { color: var(--primary); }
         .status-bar { display: flex; gap: 15px; align-items: center; }
-        .coin-box { display: flex; align-items: center; gap: 5px; background: rgba(255, 215, 0, 0.15); padding: 5px 15px; border-radius: 20px; border: 1px solid gold; }
-        .coin-svg { width: 20px; height: 20px; fill: gold; }
-        .coin-text { font-size: 18px; font-weight: bold; color: gold; font-family: 'Consolas'; }
-        .metric label { font-size: 10px; color: #aaa; display: block; }
         .metric span { font-size: 18px; font-weight: bold; font-family: 'Consolas'; }
-        @media (max-width: 600px) { .metric:nth-child(2) { display: none; } }
-
-        /* === Layout === */
+        
+        /* Layout */
         #container { display: flex; flex: 1; height: 100%; overflow: hidden; }
         @media (max-width: 768px) { #container { flex-direction: column; } #map-area { height: 55%; order: 1; } #panel { width: 100%; height: 45%; order: 2; border-left: none; border-top: 1px solid #333; } }
-
-        #panel {
-            width: 360px; background: var(--panel); border-right: 1px solid #333;
-            padding: 15px; display: flex; flex-direction: column; gap: 10px;
-            box-shadow: 5px 0 15px rgba(0,0,0,0.2); z-index: 10; overflow-y: auto;
-        }
+        
+        #panel { width: 360px; background: var(--panel); border-right: 1px solid #333; padding: 15px; display: flex; flex-direction: column; gap: 10px; z-index: 10; overflow-y: auto; }
         .card { background: #252d3d; padding: 12px; border-radius: 10px; border: 1px solid #333; }
         .card-title { font-size: 14px; font-weight: bold; color: var(--primary); margin-bottom: 8px; border-bottom: 1px solid #444; padding-bottom: 4px; }
 
-        #ai-box { background: #fff; color: #000; padding: 10px; border-radius: 10px; border-left: 5px solid var(--primary); display: flex; align-items: center; gap: 10px; min-height: 50px; }
+        #ai-box { background: #fff; color: #000; padding: 10px; border-radius: 10px; border-left: 5px solid var(--primary); display: flex; align-items: center; gap: 10px; min-height: 50px; transition: 0.3s; }
         .ai-face { font-size: 30px; } .ai-msg { font-weight: bold; font-size: 13px; line-height: 1.3; }
         
         .res-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; font-size: 12px; }
@@ -82,14 +52,12 @@
         .ai-switch { background: #333; color: #aaa; padding: 8px; border-radius: 8px; text-align: center; cursor: pointer; font-weight: bold; border: 1px solid #555; margin-bottom: 5px; font-size: 13px; pointer-events: none; opacity: 0.5; }
         .ai-switch.on { background: var(--success); color: #000; border-color: #fff; }
 
-        #map-area { flex: 1; position: relative; background: radial-gradient(circle, #1b263b 0%, #0b0c15 100%); overflow: hidden; }
+        #map-area { flex: 1; position: relative; background: radial-gradient(circle at 50% 50%, #1b263b 0%, #0b0c15 100%); overflow: hidden; }
         canvas { display: block; width: 100%; height: 100%; }
 
         #guide-overlay { position: absolute; top: 20px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.95); border: 2px solid var(--accent); color: #fff; padding: 10px 20px; border-radius: 30px; font-size: 16px; font-weight: bold; pointer-events: none; display: none; z-index: 50; white-space: nowrap; }
         #forecast-banner { position: absolute; top: 70px; left: 50%; transform: translateX(-50%); background: rgba(255, 193, 7, 0.9); color: #000; padding: 8px 20px; border-radius: 20px; font-weight: bold; font-size: 14px; display: none; animation: slideDown 0.5s; z-index: 40; }
         @keyframes slideDown { from{top:-50px} to{top:70px} }
-        #toast { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.8); padding: 10px 30px; border-radius: 30px; color: var(--success); font-size: 16px; font-weight: bold; border: 2px solid var(--success); display: none; animation: slideUp 0.5s; z-index: 60; }
-        @keyframes slideUp { from{bottom:-50px} to{bottom:30px} }
     </style>
 </head>
 <body>
@@ -98,24 +66,22 @@
         <div class="slide-card active" id="s1">
             <div class="slide-header">1. 가상발전소(VPP) 개요</div>
             <div class="slide-body">
-                <div style="font-size:50px; margin-bottom:20px;">🔌 ☀️ 🔋</div>
+                <div style="font-size:50px; text-align:center; margin-bottom:20px;">🔌 ☀️ 🔋</div>
                 <div class="slide-text-box">
-                    <b>[정의]</b> ICT 기술로 분산된 에너지를 연결하여 <b>하나의 발전소처럼 제어</b>하는 시스템.<br>
-                    <b>[목적]</b> 재생에너지의 불안정함을 <b>ESS</b>와 <b>제어 기술</b>로 보완.
+                    <b>[정의]</b> ICT 기술로 분산된 에너지를 연결하여 <b>하나의 발전소처럼 제어</b>하는 시스템입니다.<br><br>
+                    <b>[목적]</b> 재생에너지의 불안정함을 <b>ESS</b>와 <b>제어 기술</b>로 보완합니다.
                 </div>
             </div>
-            <div class="slide-footer">
-                <div class="credits">MADE BY SONG</div>
-                <button class="btn-ppt" onclick="nextSlide(2)">다음 ▶</button>
-            </div>
+            <div class="slide-footer"><button class="btn-ppt" onclick="nextSlide(2)">다음 ▶</button></div>
         </div>
         <div class="slide-card" id="s2">
             <div class="slide-header">2. 한전의 역할</div>
             <div class="slide-body">
                 <div class="slide-text-box">
+                    전력망은 <b>생산과 소비의 균형(60Hz)</b>이 생명입니다.<br><br>
                     <b>[운영 매뉴얼]</b><br>
-                    🔴 <b>부족 시:</b> [ESS 방전] / [DR(부하감축)]<br>
-                    🔵 <b>과잉 시:</b> [ESS 충전] / [출력제어]
+                    - 부족 시 : <b style="color:red">정전 위험!</b> ➔ [방전] / [DR]<br>
+                    - 과잉 시 : <b style="color:orange">과부하 위험!</b> ➔ [충전] / [출력제어]
                 </div>
             </div>
             <div class="slide-footer">
@@ -127,9 +93,10 @@
             <div class="slide-header">3. 게임 방법</div>
             <div class="slide-body">
                 <div class="slide-text-box">
-                    1. <b>자동 성장:</b> 설비는 시간이 지나면 <b>자동 증설</b>됩니다.<br>
+                    1. <b>자동 성장:</b> 설비는 국가 계획에 따라 <b>자동 건설</b>됩니다.<br>
                     2. <b>AI 팁:</b> 실전에서 AI가 팁을 줍니다.<br>
-                    3. <b>튜토리얼:</b> 먼저 위기 대응법을 실습합니다.
+                    3. <b>튜토리얼:</b> 먼저 위기 대응법을 실습합니다.<br><br>
+                    준비되셨습니까?
                 </div>
             </div>
             <div class="slide-footer">
@@ -142,12 +109,7 @@
     <header>
         <div class="logo">⚡ KEPCO <span style="color:var(--primary)">VPP</span></div>
         <div class="status-bar">
-            <div class="coin-box">
-                <svg class="coin-svg" viewBox="0 0 24 24"><path d="M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M12,5.5A6.5,6.5 0 0,0 5.5,12A6.5,6.5 0 0,0 12,18.5A6.5,6.5 0 0,0 18.5,12A6.5,6.5 0 0,0 12,5.5M12,7A5,5 0 0,1 17,12A5,5 0 0,1 12,17A5,5 0 0,1 7,12A5,5 0 0,1 12,7Z" /></svg>
-                <span class="coin-text" id="ui-coin">0</span>
-            </div>
             <div class="metric"><label>LEVEL</label><span id="ui-level">1</span></div>
-            <div class="metric"><label>TIME</label><span id="ui-time">12:00</span></div>
             <div class="metric"><label>FREQ</label><span id="ui-freq" style="color:var(--primary)">60.00</span> Hz</div>
         </div>
     </header>
@@ -173,9 +135,7 @@
                     <button class="ctrl-btn c-dr" id="btn-dr" onclick="toggleDR()">🏭 DR 발령</button>
                     <button class="ctrl-btn c-cut" id="btn-cut" onclick="toggleCut()">✂️ 출력제어</button>
                 </div>
-                <div style="margin-top:10px; font-size:12px; color:#aaa;">ESS: <span id="val-soc">50%</span>
-                    <div style="width:100%; height:6px; background:#000; margin-top:3px; border-radius:3px;"><div id="bar-soc" style="width:50%; height:100%; background:var(--success); transition:0.3s;"></div></div>
-                </div>
+                <div style="margin-top:10px; font-size:12px; color:#aaa;">ESS 잔량: <span id="val-soc">50%</span></div>
             </div>
 
             <div class="card">
@@ -193,18 +153,16 @@
             <canvas id="gameCanvas"></canvas>
             <div id="guide-overlay"></div>
             <div id="forecast-banner"></div>
-            <div id="toast"></div>
         </div>
     </div>
 
     <script>
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
-        const TICK_SPEED = 0.3; 
-        const MAX_LEVEL = 20;
+        const TICK_SPEED = 0.3; const MAX_LEVEL = 20;
 
         let isRunning = false, isAuto = false, mode = 'PPT', step = 0;
-        let time = 720, level = 1, coin = 0, freq = 60.00;
+        let time = 720, level = 1, freq = 60.00;
         let supply = 0, demand = 0, targetSupply = 0, targetDemand = 0;
         let essCap = 2000, essLevel = 1000, action = 'stop', drOn = false, cutOn = false;
         let pendingExpansion = null;
@@ -224,7 +182,7 @@
         function startGame() {
             document.getElementById('intro-overlay').style.display = 'none';
             resize(); isRunning = true;
-            spawn('solar','honam',1); spawn('wind','jeju',1); spawn('apt','seoul',2);
+            spawn('solar','honam',2); spawn('wind','jeju',1); spawn('apt','seoul',3);
             startTutorial(); gameLoop();
         }
 
@@ -267,14 +225,11 @@
             action='stop'; drOn=false; cutOn=false; updateBtns();
             level = 1; time = 720;
             
-            // ★ 강제 초기화 (0 멈춤 해결) ★
+            // ★ 중요: 실전 모드 설비 대거 추가 (수치 0 방지) ★
             objects = [];
             spawn('solar','honam',5); spawn('wind','jeju',3); spawn('wind','gangwon',2); spawn('apt','seoul',5); spawn('factory','yeongnam',2);
-            // 수치 강제 동기화
-            supply = 3000; demand = 3000; targetSupply = 3000; targetDemand = 3000;
-
+            
             setAIText("실전 모드 시작. 주파수를 60Hz로 유지하세요.", "neutral");
-            showToast("🚀 실전 모드 가동! 설비가 배치되었습니다.");
         }
 
         function manual(act) {
@@ -305,4 +260,147 @@
 
         function updateBtns() {
             document.querySelectorAll('.ctrl-btn').forEach(b=>b.classList.remove('active'));
-            if(action==='charge') document.getElementById('btn
+            if(action==='charge') document.getElementById('btn-c').classList.add('active');
+            if(action==='discharge') document.getElementById('btn-d').classList.add('active');
+            if(drOn) document.getElementById('btn-dr').classList.add('active');
+            if(cutOn) document.getElementById('btn-cut').classList.add('active');
+        }
+
+        function gameLoop() { if(isRunning) { updatePhysics(); if(mode==='REAL') aiLogic(); draw(); updateUI(); requestAnimationFrame(gameLoop); } }
+
+        function updatePhysics() {
+            time += TICK_SPEED;
+            if(time >= 1440) { time=0; if(mode==='REAL') handleLevelUp(); }
+
+            if(pendingExpansion) {
+                pendingExpansion.timer--;
+                if(pendingExpansion.timer <= 0) {
+                    spawn(pendingExpansion.type, pendingExpansion.region, pendingExpansion.count);
+                    document.getElementById('forecast-banner').style.display='none';
+                    pendingExpansion = null;
+                }
+            }
+
+            if(mode === 'REAL') {
+                let h = time/60;
+                let curve = (h>9 && h<21) ? 1.3 : 0.7;
+                let baseLoad = 2000; // 기본 부하
+                objects.forEach(o=>{ if(o.type==='apt') baseLoad+=100; if(o.type==='factory') baseLoad+=300; });
+                
+                let tDem = baseLoad * curve;
+                if(drOn) tDem *= 0.8;
+
+                let baseGen = 2000 + (level*100);
+                let reGen = 0;
+                let sun = (h>7&&h<18)?Math.sin((h-7)/11*Math.PI):0;
+                let wind = 0.5 + Math.sin(time*0.05)*0.3;
+                objects.forEach(o=>{ if(o.type==='solar') reGen+=300*sun; if(o.type==='wind') reGen+=400*wind; });
+                
+                let tSup = baseGen + reGen;
+                if(cutOn) tSup *= 0.7;
+
+                essCap = 2000 + (objects.length*100);
+                let flow = 0;
+                if(isAuto) autoControl(tSup, tDem);
+
+                if(action==='charge') flow = -1500;
+                if(action==='discharge') flow = 1500;
+                
+                essLevel -= flow * 0.03;
+                essLevel = Math.max(0, Math.min(essLevel, essCap));
+                tSup += flow;
+
+                targetDemand = tDem; targetSupply = tSup;
+            }
+
+            demand += (targetDemand - demand) * 0.1;
+            supply += (targetSupply - supply) * 0.1;
+
+            let diff = supply - demand;
+            freq += diff * 0.00005;
+            freq += (60 - freq) * 0.03;
+        }
+
+        function handleLevelUp() {
+            if(level<20) {
+                level++;
+                let t = ['solar','wind','apt','factory'][Math.floor(Math.random()*4)];
+                let r = ['honam','gangwon','seoul','yeongnam'][Math.floor(Math.random()*4)];
+                document.getElementById('forecast-banner').innerText = `📢 [예보] 잠시 후 ${r}지역 ${t} 증설!`;
+                document.getElementById('forecast-banner').style.display = 'block';
+                pendingExpansion = { type:t, region:r, count:2, timer:300 };
+            }
+        }
+
+        function autoControl(g, l) {
+            if(g > l + 200) { if(essLevel<essCap){action='charge'; cutOn=false;} else{action='stop'; cutOn=true;} }
+            else if(g < l - 200) { if(essLevel>0){action='discharge'; drOn=false;} else{action='stop'; drOn=true;} }
+            else { action='stop'; cutOn=false; drOn=false; }
+            updateBtns();
+        }
+
+        function aiLogic() {
+            if(isAuto) { setAIText("AI 자동 제어 중입니다.", "happy"); return; }
+            if(supply > demand + 200) setAIText("과잉 공급! [ESS충전] 또는 [출력제어]!", "worry");
+            else if(supply < demand - 200) setAIText("전력 부족! [ESS방전] 또는 [DR]!", "alert");
+            else setAIText("안정적입니다.", "neutral");
+        }
+
+        function setAIText(msg, mood) {
+            const box = document.getElementById('ai-box');
+            const txt = document.getElementById('ai-text');
+            const face = document.querySelector('.ai-face');
+            txt.innerText = msg;
+            if(mood==='alert') { box.style.borderColor='var(--danger)'; face.innerText='🚨'; }
+            else if(mood==='worry') { box.style.borderColor='var(--accent)'; face.innerText='😮'; }
+            else if(mood==='happy') { box.style.borderColor='var(--success)'; face.innerText='🤖'; }
+            else { box.style.borderColor='#444'; face.innerText='🤖'; }
+        }
+
+        function draw() {
+            let w=canvas.width; let h=canvas.height;
+            ctx.clearRect(0,0,w,h);
+            ctx.strokeStyle='rgba(255,255,255,0.1)'; ctx.lineWidth=2; ctx.beginPath();
+            let c = getNodePos('chungcheong');
+            nodes.forEach(n=>{ if(n.id!=='chungcheong'&&n.id!=='jeju') { let p=getNodePos(n.id); ctx.moveTo(c.x, c.y); ctx.lineTo(p.x, p.y); }});
+            let p1=getNodePos('honam'), p2=getNodePos('jeju'); ctx.moveTo(p1.x,p1.y); ctx.lineTo(p2.x,p2.y);
+            ctx.stroke();
+            nodes.forEach(n=>{
+                let p=getNodePos(n.id);
+                ctx.beginPath(); ctx.arc(p.x, p.y, 50, 0, Math.PI*2);
+                ctx.fillStyle=n.c; ctx.globalAlpha=0.2; ctx.fill();
+                ctx.strokeStyle=n.c; ctx.globalAlpha=1; ctx.lineWidth=2; ctx.stroke();
+                ctx.fillStyle='#fff'; ctx.font='bold 16px Noto Sans KR'; ctx.textAlign='center';
+                ctx.fillText(n.name, p.x, p.y-10);
+            });
+            objects.forEach(o=>{
+                let px=o.x*w; let py=o.y*h;
+                let icon = o.type==='solar'?'☀️':(o.type==='wind'?'🌀':(o.type==='apt'?'🏢':'🏭'));
+                let float = Math.sin(Date.now()*0.003 + o.phase)*3;
+                ctx.font='24px Arial'; ctx.fillText(icon, px, py+float);
+            });
+        }
+
+        function getNodePos(id) {
+            let w=canvas.width; let h=canvas.height;
+            let n=nodes.find(x=>x.id===id);
+            return {x:n.x*w, y:n.y*h};
+        }
+
+        function updateUI() {
+            let hh=Math.floor(time/60).toString().padStart(2,'0');
+            let mm=Math.floor(time%60).toString().padStart(2,'0');
+            document.getElementById('ui-level').innerText = level;
+            document.getElementById('ui-freq').innerText = freq.toFixed(2);
+            document.getElementById('ui-freq').style.color = (freq<59.8||freq>60.2)?'var(--danger)':'var(--primary)';
+            document.getElementById('val-sup').innerText = Math.floor(supply);
+            document.getElementById('val-dem').innerText = Math.floor(demand);
+            document.getElementById('val-soc').innerText = Math.floor(essLevel/essCap*100)+"%";
+            document.getElementById('cnt-solar').innerText = objects.filter(o=>o.type==='solar').length;
+            document.getElementById('cnt-wind').innerText = objects.filter(o=>o.type==='wind').length;
+            document.getElementById('cnt-apt').innerText = objects.filter(o=>o.type==='apt').length;
+            document.getElementById('cnt-fac').innerText = objects.filter(o=>o.type==='factory').length;
+        }
+    </script>
+</body>
+</html>
