@@ -509,7 +509,7 @@
                 document.getElementById('forecast-banner').innerText = `📢 [예보] 잠시 후 ${r}지역 ${t} 증설!`;
                 document.getElementById('forecast-banner').style.display = 'block';
                 setTimeout(() => {
-                    spawn(t, r, 10);
+                    spawn(t, r, 3);
                     document.getElementById('forecast-banner').style.display = 'none';
                 }, 10000); //10초 뒤 자동증설
             }
