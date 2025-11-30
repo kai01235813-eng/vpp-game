@@ -329,6 +329,10 @@
             spawn('solar','honam',5); spawn('wind','jeju',3); spawn('wind','gangwon',2); spawn('apt','seoul',5); spawn('factory','yeongnam',2);
             
             setAIText("실전 모드 시작. 주파수를 60Hz로 유지하세요.", "neutral");
+            showToast("🚀 실전 모드 가동! 설비가 배치되었습니다.");
+            
+            // 강제로 물리 엔진 한 번 업데이트해서 수치 갱신
+            updatePhysics();
         }
 
         function manual(act) {
