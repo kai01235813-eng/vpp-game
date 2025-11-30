@@ -265,29 +265,29 @@
             autoExpansion();
         }, 10000); // 10초 (원하는 속도로 조절)
 
-  function autoExpansion() {
-        let types = [
-            {type:'solar', region:'honam',    icon:"☀️", name:"호남 태양광"},
-            {type:'wind',  region:'jeju',     icon:"🌀", name:"제주 풍력"},
-            {type:'apt',   region:'seoul',    icon:"🏢", name:"서울 아파트"},
-            {type:'factory', region:'yeongnam', icon:"🏭", name:"영남 공장"}
-        ];
-    
-        // 20% 확률로 "이번 턴은 아무것도 증가하지 않음"
-        if (Math.random() < 0.1) return;
-    
-        // 1개 랜덤 선택
-        let pick = types[Math.floor(Math.random() * types.length)];
-    
-        // 증가량: 1~5 중 하나
-        let amount = Math.floor(Math.random() * 5) + 1;
-    
-        // 실제 증가
-        spawn(pick.type, pick.region, amount);
-    
-        // 배너 표시
-        showBanner(`${pick.icon} ${pick.name} +${amount}`, "info");
-    }
+          function autoExpansion() {
+                let types = [
+                    {type:'solar', region:'honam',    icon:"☀️", name:"호남 태양광"},
+                    {type:'wind',  region:'jeju',     icon:"🌀", name:"제주 풍력"},
+                    {type:'apt',   region:'seoul',    icon:"🏢", name:"서울 아파트"},
+                    {type:'factory', region:'yeongnam', icon:"🏭", name:"영남 공장"}
+                ];
+            
+                // 20% 확률로 "이번 턴은 아무것도 증가하지 않음"
+                if (Math.random() < 0.1) return;
+            
+                // 1개 랜덤 선택
+                let pick = types[Math.floor(Math.random() * types.length)];
+            
+                // 증가량: 1~3 중 하나
+                let amount = Math.floor(Math.random() * 2) + 1;
+            
+                // 실제 증가
+                spawn(pick.type, pick.region, amount);
+            
+                // 배너 표시
+                showBanner(`${pick.icon} ${pick.name} +${amount}`, "info");
+        }
 
         const nodes = [
             {id:'seoul', name:'수도권', x:0.35, y:0.25, c:'#ef5350'}, {id:'gangwon', name:'강원', x:0.7, y:0.2, c:'#42a5f5'},
