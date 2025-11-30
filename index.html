@@ -68,29 +68,12 @@
         .ai-switch { background: #333; color: #aaa; padding: 8px; border-radius: 8px; text-align: center; cursor: pointer; font-weight: bold; border: 1px solid #555; margin-bottom: 5px; font-size: 13px; pointer-events: none; opacity: 0.5; }
         .ai-switch.on { background: var(--success); color: #000; border-color: #fff; }
 
-        /* 코인 UI 디자인 */
-        .coin-box { 
-            display: flex; align-items: center; gap: 5px; 
-            background: rgba(255, 215, 0, 0.15); 
-            padding: 5px 15px; border-radius: 20px; 
-            border: 1px solid gold; margin-right: 15px;
-        }
-        .coin-svg { 
-            width: 20px; height: 20px; 
-            fill: gold; filter: drop-shadow(0 0 2px gold); 
-        }
-        .coin-text { 
-            font-size: 18px; font-weight: bold; 
-            color: gold; font-family: 'Consolas', monospace; 
-        }
-
         #map-area { flex: 1; position: relative; background: radial-gradient(circle at 50% 50%, #1b263b 0%, #0b0c15 100%); overflow: hidden; }
         canvas { display: block; width: 100%; height: 100%; }
 
         #guide-overlay { position: absolute; top: 20px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.95); border: 2px solid var(--accent); color: #fff; padding: 10px 20px; border-radius: 30px; font-size: 16px; font-weight: bold; pointer-events: none; display: none; z-index: 50; white-space: nowrap; }
         #forecast-banner { position: absolute; top: 70px; left: 50%; transform: translateX(-50%); background: rgba(255, 193, 7, 0.9); color: #000; padding: 8px 20px; border-radius: 20px; font-weight: bold; font-size: 14px; display: none; animation: slideDown 0.5s; z-index: 40; }
         @keyframes slideDown { from{top:-50px} to{top:70px} }
-
     </style>
 </head>
 <body>
@@ -196,12 +179,6 @@
         <div class="status-bar">
             <div class="metric"><label>LEVEL</label><span id="ui-level">1</span></div>
             <div class="metric"><label>FREQ</label><span id="ui-freq" style="color:var(--primary)">60.00</span> Hz</div>
-            <div class="coin-box">
-                <svg class="coin-svg" viewBox="0 0 24 24">
-                    <path d="M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M12,5.5A6.5,6.5 0 0,0 5.5,12A6.5,6.5 0 0,0 12,18.5A6.5,6.5 0 0,0 18.5,12A6.5,6.5 0 0,0 12,5.5M12,7A5,5 0 0,1 17,12A5,5 0 0,1 12,17A5,5 0 0,1 7,12A5,5 0 0,1 12,7Z" />
-                </svg>
-                <span class="coin-text" id="ui-coin">0</span>
-            </div>
         </div>
     </header>
 
@@ -321,8 +298,6 @@
             spawn('solar','honam',5); spawn('wind','jeju',3); spawn('wind','gangwon',2); spawn('apt','seoul',5); spawn('factory','yeongnam',2);
             
             setAIText("실전 모드 시작. 주파수를 60Hz로 유지하세요.", "neutral");
-            showToast("🚀 실전 모드 가동! 설비가 배치되었습니다.");
-            updateUI();
         }
 
         function manual(act) {
@@ -405,28 +380,6 @@
 
                 targetDemand = tDem; targetSupply = tSup;
             }
-            else {
-                // --- [추가된 부분] 튜토리얼 모드 강제 값 설정 ---
-                // 튜토리얼 단계에 따라 목표값을 강제로 지정해야 0이 되지 않음
-                if(step === 1) { 
-                    // 상황 1: 전력 부족 (방전 필요)
-                    targetDemand = 4000; 
-                    if(action === 'discharge') targetSupply = 4000; // 해결
-                    else targetSupply = 2000; // 부족
-                }
-                else if(step === 2) {
-                    // 상황 2: 전력 과잉 (출력제어 필요)
-                    targetDemand = 2000;
-                    if(cutOn) targetSupply = 2000; // 해결
-                    else targetSupply = 4000; // 과잉
-                }
-                else {
-                    // 그 외 대기 상태 (안정적)
-                    targetDemand = 3000;
-                    targetSupply = 3000;
-                }
-            }
-     
 
             demand += (targetDemand - demand) * 0.1;
             supply += (targetSupply - supply) * 0.1;
@@ -434,15 +387,6 @@
             let diff = supply - demand;
             freq += diff * 0.00005;
             freq += (60 - freq) * 0.03;
-
-                   // ▼▼▼ [이 코드를 추가하세요] ▼▼▼
-            // 실전 모드이고, 주파수가 58~62Hz 사이면 코인 획득
-            if (mode === 'REAL') {
-                if (freq >= 58.0 && freq <= 62.0) {
-                    coin += 1; // 쌓이는 속도 (숫자가 클수록 빠름)
-                }
-            }
-        
         }
 
         function handleLevelUp() {
@@ -517,9 +461,6 @@
             document.getElementById('ui-level').innerText = level;
             document.getElementById('ui-freq').innerText = freq.toFixed(2);
             document.getElementById('ui-freq').style.color = (freq<59.8||freq>60.2)?'var(--danger)':'var(--primary)';
-                // ▼▼▼ [이 코드를 추가하세요] ▼▼▼
-            // 코인 숫자를 화면에 표시 (소수점 버림)
-            document.getElementById('ui-coin').innerText = Math.floor(coin).toLocaleString();
             document.getElementById('val-sup').innerText = Math.floor(supply);
             document.getElementById('val-dem').innerText = Math.floor(demand);
             document.getElementById('val-soc').innerText = Math.floor(essLevel/essCap*100)+"%";
