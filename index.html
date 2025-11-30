@@ -321,6 +321,8 @@
             spawn('solar','honam',5); spawn('wind','jeju',3); spawn('wind','gangwon',2); spawn('apt','seoul',5); spawn('factory','yeongnam',2);
             
             setAIText("실전 모드 시작. 주파수를 60Hz로 유지하세요.", "neutral");
+            showToast("🚀 실전 모드 가동! 설비가 배치되었습니다.");
+            updateUI();
         }
 
         function manual(act) {
@@ -424,13 +426,7 @@
                     targetSupply = 3000;
                 }
             }
-            // ▼▼▼ [이 코드를 추가하세요] ▼▼▼
-            // 실전 모드이고, 주파수가 58~62Hz 사이면 코인 획득
-            if (mode === 'REAL') {
-                if (freq >= 58.0 && freq <= 62.0) {
-                    coin += 1; // 쌓이는 속도 (숫자가 클수록 빠름)
-                }
-            }
+     
 
             demand += (targetDemand - demand) * 0.1;
             supply += (targetSupply - supply) * 0.1;
@@ -439,6 +435,13 @@
             freq += diff * 0.00005;
             freq += (60 - freq) * 0.03;
 
+                   // ▼▼▼ [이 코드를 추가하세요] ▼▼▼
+            // 실전 모드이고, 주파수가 58~62Hz 사이면 코인 획득
+            if (mode === 'REAL') {
+                if (freq >= 58.0 && freq <= 62.0) {
+                    coin += 1; // 쌓이는 속도 (숫자가 클수록 빠름)
+                }
+            }
         
         }
 
@@ -512,11 +515,11 @@
             let hh=Math.floor(time/60).toString().padStart(2,'0');
             let mm=Math.floor(time%60).toString().padStart(2,'0');
             document.getElementById('ui-level').innerText = level;
-            // ▼▼▼ [이 코드를 추가하세요] ▼▼▼
-            // 코인 숫자를 화면에 표시 (소수점 버림)
-            document.getElementById('ui-coin').innerText = Math.floor(coin).toLocaleString();
             document.getElementById('ui-freq').innerText = freq.toFixed(2);
             document.getElementById('ui-freq').style.color = (freq<59.8||freq>60.2)?'var(--danger)':'var(--primary)';
+                // ▼▼▼ [이 코드를 추가하세요] ▼▼▼
+            // 코인 숫자를 화면에 표시 (소수점 버림)
+            document.getElementById('ui-coin').innerText = Math.floor(coin).toLocaleString();
             document.getElementById('val-sup').innerText = Math.floor(supply);
             document.getElementById('val-dem').innerText = Math.floor(demand);
             document.getElementById('val-soc').innerText = Math.floor(essLevel/essCap*100)+"%";
