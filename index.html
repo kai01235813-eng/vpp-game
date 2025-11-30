@@ -36,7 +36,31 @@
         .slide-footer { margin-top: 20px; display: flex; justify-content: flex-end; gap: 15px; flex-shrink: 0; }
         .btn-ppt { padding: 12px 25px; border: none; border-radius: 10px; font-size: 18px; background: #0054a6; color: white; font-family: 'Jua'; cursor: pointer; }
         .btn-start { background: var(--success); color: #000; }
+        * 코인 박스 디자인 */
+        .coin-box { 
+            display: flex; align-items: center; gap: 5px; 
+            background: rgba(255, 215, 0, 0.15); 
+            padding: 5px 15px; 
+            border-radius: 20px; 
+            border: 1px solid gold; 
+        }
+        
+        /* 코인 아이콘(SVG) 크기 및 색상 */
+        .coin-svg { 
+            width: 20px; height: 20px; 
+            fill: gold; /* 동전 색깔 */
+            filter: drop-shadow(0 0 2px gold); /* 반짝이는 효과 */
+        }
+        
+        /* 코인 숫자 폰트 */
+        .coin-text { 
+            font-size: 18px; font-weight: bold; 
+            color: gold; 
+            font-family: 'Consolas', monospace; 
+        }
         @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+
+
 
         /* Header */
         header { height: 60px; background: #151a24; border-bottom: 2px solid var(--primary); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; z-index: 100; flex-shrink: 0; }
