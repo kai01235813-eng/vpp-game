@@ -257,6 +257,22 @@
         const UPDATE_INTERVAL = 300; // 500ms = 0.5초마다 업데이트. 1000이면 1초마다
         let pendingExpansion = null;
 
+        // ★ 자동 설비 증설 전용 빠른 타이머 ★
+        setInterval(() => {
+            if (!isRunning || mode !== 'REAL') return;
+        
+            // 예: 20초마다 자동 설비 증설
+            autoExpansion();
+        }, 20000); // 20초 (원하는 속도로 조절)
+
+        function autoExpansion() {
+            // 지역별 확률적으로 설비 자동 증가
+            spawn('solar', 'honam', Math.random() < 0.3 ? 1 : 0);
+            spawn('wind', 'jeju', Math.random() < 0.2 ? 1 : 0);
+            spawn('apt', 'seoul', Math.random() < 0.25 ? 1 : 0);
+            spawn('factory', 'yeongnam', Math.random() < 0.2 ? 1 : 0);
+        }
+
         const nodes = [
             {id:'seoul', name:'수도권', x:0.35, y:0.25, c:'#ef5350'}, {id:'gangwon', name:'강원', x:0.7, y:0.2, c:'#42a5f5'},
             {id:'chungcheong', name:'충청', x:0.4, y:0.45, c:'#ffa726'}, {id:'honam', name:'호남', x:0.3, y:0.7, c:'#ab47bc'},
