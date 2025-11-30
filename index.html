@@ -65,7 +65,14 @@
         .c-charge { background: var(--danger); } .c-discharge { background: var(--success); }
         .c-DR { background: #9c27b0; grid-column: span 2; } .c-cut { background: #ff9800; grid-column: span 2; }
 
-        .ai-switch { background: #333; color: #aaa; padding: 8px; border-radius: 8px; text-align: center; cursor: pointer; font-weight: bold; border: 1px solid #555; margin-bottom: 5px; font-size: 13px; pointer-events: none; opacity: 0.5; }
+       .ai-switch {
+            background: #333; color: #aaa; padding: 8px;
+            border-radius: 8px; text-align: center; cursor: pointer;
+            font-weight: bold; border: 1px solid #555;
+            margin-bottom: 5px; font-size: 13px;
+            opacity: 1;              /* 활성 */
+            pointer-events: auto;    /* 클릭 가능 */
+        }
         .ai-switch.on { background: var(--success); color: #000; border-color: #fff; }
 
         #map-area { flex: 1; position: relative; background: radial-gradient(circle at 50% 50%, #1b263b 0%, #0b0c15 100%); overflow: hidden; }
@@ -446,37 +453,18 @@
             handleLevelUp();
         }
         function toggleAuto() {
-            // 자동 운전 상태 변경
             isAuto = !isAuto;
         
-            const btn = document.getElementById("btn-auto");
-            const aiText = document.getElementById("ai-text");
+            const sw = document.getElementById('btn-auto');
         
             if (isAuto) {
-                // ON 상태 UI
-                btn.classList.add("on");
-                btn.innerText = "● AI 자동 운전 (ON)";
-                aiText.innerText = "AI 자동운전 모드 활성화됨";
-        
-                // 수동 버튼 잠금
-                document.querySelectorAll(".ctrl-btn").forEach(b => {
-                    b.classList.remove("unlocked");
-                    b.style.opacity = 0.4;
-                    b.style.pointerEvents = "none";
-                });
-        
+                sw.classList.add('on');
+                sw.innerText = "● AI 자동 운전 (ON)";
+                document.getElementById('ai-text').innerText = "AI 자동 운전 중...";
             } else {
-                // OFF 상태 UI
-                btn.classList.remove("on");
-                btn.innerText = "● AI 자동 운전 (OFF)";
-                aiText.innerText = "수동 운전 모드";
-        
-                // 수동 버튼 활성화
-                document.querySelectorAll(".ctrl-btn").forEach(b => {
-                    b.classList.add("unlocked");
-                    b.style.opacity = 1;
-                    b.style.pointerEvents = "auto";
-                });
+                sw.classList.remove('on');
+                sw.innerText = "● AI 자동 운전 (OFF)";
+                document.getElementById('ai-text').innerText = "수동 운전 모드";
             }
         }
         function manual(act) {
