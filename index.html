@@ -253,6 +253,8 @@
         let time = 720, level = 1, freq = 60.00; let coins = 0;
         let supply = 0, demand = 0, targetSupply = 0, targetDemand = 0;
         let essCap = 2000, essLevel = 1000, action = 'stop', DROn = false, cutOn = false;
+        let lastUpdate = 0;
+        const UPDATE_INTERVAL = 1000; // 500ms = 0.5초마다 업데이트. 1000이면 1초마다
         let pendingExpansion = null;
 
         const nodes = [
@@ -354,7 +356,22 @@
             if(cutOn) document.getElementById('btn-cut').classList.add('active');
         }
 
-        function gameLoop() { if(isRunning) { updatePhysics(); if(mode==='REAL') aiLogic(); draw(); updateUI(); requestAnimationFrame(gameLoop); } }
+        function gameLoop(timestamp) {
+            if (!isRunning) return;
+        
+            // --- 일정 시간 간격으로만 updatePhysics와 aiLogic 실행 ---
+            if (timestamp - lastUpdate >= UPDATE_INTERVAL) {
+                updatePhysics();
+                if (mode === 'REAL') aiLogic();
+                lastUpdate = timestamp;
+            }
+        
+            // --- 매 프레임 해야 하는 것은 그대로 ---
+            draw();
+            updateUI();
+        
+            requestAnimationFrame(gameLoop);
+        }
 
         function updatePhysics() {
             time += TICK_SPEED;
