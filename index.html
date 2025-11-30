@@ -174,13 +174,21 @@
 
     </div>
 
-    <header>
-        <div class="logo">⚡ KEPCO <span style="color:var(--primary)">VPP</span></div>
-        <div class="status-bar">
-            <div class="metric"><label>LEVEL</label><span id="ui-level">1</span></div>
-            <div class="metric"><label>FREQ</label><span id="ui-freq" style="color:var(--primary)">60.00</span> Hz</div>
+ <header>
+    <div class="logo">⚡ KEPCO <span style="color:var(--primary)">VPP</span></div>
+    
+    <div class="status-bar">
+        <div class="coin-box">
+            <svg class="coin-svg" viewBox="0 0 24 24">
+                <path d="M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M12,5.5A6.5,6.5 0 0,0 5.5,12A6.5,6.5 0 0,0 12,18.5A6.5,6.5 0 0,0 18.5,12A6.5,6.5 0 0,0 12,5.5M12,7A5,5 0 0,1 17,12A5,5 0 0,1 12,17A5,5 0 0,1 7,12A5,5 0 0,1 12,7Z" />
+            </svg>
+            <span class="coin-text" id="ui-coin">0</span>
         </div>
-    </header>
+
+        <div class="metric"><label>LEVEL</label><span id="ui-level">1</span></div>
+        <div class="metric"><label>FREQ</label><span id="ui-freq" style="color:var(--primary)">60.00</span> Hz</div>
+    </div>
+</header>
 
     <div id="container">
         <div id="panel">
@@ -387,6 +395,12 @@
             let diff = supply - demand;
             freq += diff * 0.00005;
             freq += (60 - freq) * 0.03;
+
+            if (mode === 'REAL') {
+                if (freq >= 58.0 && freq <= 62.0) {
+                coin += 1; // 범위 안에 있으면 코인이 쭉쭉 찹니다.
+                }
+            }
         }
 
         function handleLevelUp() {
@@ -468,6 +482,7 @@
             document.getElementById('cnt-wind').innerText = objects.filter(o=>o.type==='wind').length;
             document.getElementById('cnt-apt').innerText = objects.filter(o=>o.type==='apt').length;
             document.getElementById('cnt-fac').innerText = objects.filter(o=>o.type==='factory').length;
+            document.getElementById('ui-coin').innerText = Math.floor(coin).toLocaleString();
         }
     </script>
 </body>
