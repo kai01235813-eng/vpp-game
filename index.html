@@ -74,6 +74,20 @@
         #guide-overlay { position: absolute; top: 20px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.95); border: 2px solid var(--accent); color: #fff; padding: 10px 20px; border-radius: 30px; font-size: 16px; font-weight: bold; pointer-events: none; display: none; z-index: 50; white-space: nowrap; }
         #forecast-banner { position: absolute; top: 70px; left: 50%; transform: translateX(-50%); background: rgba(255, 193, 7, 0.9); color: #000; padding: 8px 20px; border-radius: 20px; font-weight: bold; font-size: 14px; display: none; animation: slideDown 0.5s; z-index: 40; }
         @keyframes slideDown { from{top:-50px} to{top:70px} }
+        .coin-box { 
+            display: flex; align-items: center; gap: 5px; 
+            background: rgba(255, 215, 0, 0.15); 
+            padding: 5px 15px; border-radius: 20px; 
+            border: 1px solid gold; margin-right: 15px;
+        }
+        .coin-svg { 
+            width: 20px; height: 20px; 
+            fill: gold; filter: drop-shadow(0 0 2px gold); 
+        }
+        .coin-text { 
+            font-size: 18px; font-weight: bold; 
+            color: gold; font-family: 'Consolas', monospace; 
+        }
     </style>
 </head>
 <body>
@@ -179,6 +193,7 @@
         <div class="status-bar">
             <div class="metric"><label>LEVEL</label><span id="ui-level">1</span></div>
             <div class="metric"><label>FREQ</label><span id="ui-freq" style="color:var(--primary)">60.00</span> Hz</div>
+            <div class="metric"><label>COIN</label><span id="ui-coin">0</span></div>
         </div>
     </header>
 
@@ -230,7 +245,7 @@
         const TICK_SPEED = 0.3; const MAX_LEVEL = 20;
 
         let isRunning = false, isAuto = false, mode = 'PPT', step = 0;
-        let time = 720, level = 1, freq = 60.00;
+        let time = 720, level = 1, freq = 60.00; let coins = 0;
         let supply = 0, demand = 0, targetSupply = 0, targetDemand = 0;
         let essCap = 2000, essLevel = 1000, action = 'stop', DROn = false, cutOn = false;
         let pendingExpansion = null;
@@ -387,6 +402,10 @@
             let diff = supply - demand;
             freq += diff * 0.00005;
             freq += (60 - freq) * 0.03;
+
+            if (freq >= 58 && freq <= 62) {
+                coins += 1;   // 틱마다 조금씩 증가
+            }
         }
 
         function handleLevelUp() {
@@ -461,6 +480,7 @@
             document.getElementById('ui-level').innerText = level;
             document.getElementById('ui-freq').innerText = freq.toFixed(2);
             document.getElementById('ui-freq').style.color = (freq<59.8||freq>60.2)?'var(--danger)':'var(--primary)';
+            document.getElementById('ui-coin').innerText = Math.floor(coins);
             document.getElementById('val-sup').innerText = Math.floor(supply);
             document.getElementById('val-dem').innerText = Math.floor(demand);
             document.getElementById('val-soc').innerText = Math.floor(essLevel/essCap*100)+"%";
