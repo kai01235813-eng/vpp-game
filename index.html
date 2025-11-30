@@ -255,15 +255,14 @@
         let essCap = 2000, essLevel = 1000, action = 'stop', DROn = false, cutOn = false;
         let lastUpdate = 0;
         const UPDATE_INTERVAL = 300; // 500ms = 0.5초마다 업데이트. 1000이면 1초마다
-        let pendingExpansion = null;
 
         // ★ 자동 설비 증설 전용 빠른 타이머 ★
         setInterval(() => {
             if (!isRunning || mode !== 'REAL') return;
         
-            // 예: 20초마다 자동 설비 증설
+            // 예: 10초마다 자동 설비 증설
             autoExpansion();
-        }, 20000); // 20초 (원하는 속도로 조절)
+        }, 10000); // 10초 (원하는 속도로 조절)
 
         function autoExpansion() {
             // 지역별 확률적으로 설비 자동 증가
@@ -393,14 +392,6 @@
             time += TICK_SPEED;
             if(time >= 1440) { time=0; if(mode==='REAL') handleLevelUp(); }
 
-            if(pendingExpansion) {
-                pendingExpansion.timer--;
-                if(pendingExpansion.timer <= 0) {
-                    spawn(pendingExpansion.type, pendingExpansion.region, pendingExpansion.count);
-                    document.getElementById('forecast-banner').style.display='none';
-                    pendingExpansion = null;
-                }
-            }
 
             if(mode === 'REAL') {
                 let h = time/60;
@@ -453,7 +444,10 @@
                 let r = ['honam','gangwon','seoul','yeongnam'][Math.floor(Math.random()*4)];
                 document.getElementById('forecast-banner').innerText = `📢 [예보] 잠시 후 ${r}지역 ${t} 증설!`;
                 document.getElementById('forecast-banner').style.display = 'block';
-                pendingExpansion = { type:t, region:r, count:2, timer:300 };
+                setTimeout(() => {
+                    spawn(t, r, 10);
+                    document.getElementById('forecast-banner').style.display = 'none';
+                }, 10000); //10초 뒤 자동증설
             }
         }
 
