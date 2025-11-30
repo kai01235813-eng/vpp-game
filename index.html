@@ -80,7 +80,6 @@
             <div class="slide-footer">
                 <div class="credits">MADE BY SONG</div>
                          <div class="slide-footer">
-                            <button class="btn-ppt" onclick="nextSlide(1)">◀ 이전</button>
                             <button class="btn-ppt" onclick="nextSlide(2)">다음 ▶</button>
             </div>
             </div>
@@ -95,12 +94,12 @@
                     전력망은 <b>생산과 소비의 균형(60Hz)</b>이 생명입니다.<br><br>
                     <b>[운영 매뉴얼]</b><br>
                     - 발전량 부족 시 : <b style="color:red">정전 위험!</b> ➔ [ESS 방전] / [DR]<br>
-                    - 발전량 과잉 시 : <b style="color:orange">과부하 위험!</b> ➔ [ESS 충전] / [출력제어]
+                    - 발전량 과잉 시 : <b style="color:orange">과부하 위험!</b> ➔ [ESS 충전] / [신재생 출력제어]
                     전력망은 <b>생산(공급)과 소비(수요)의 균형</b>이 핵심입니다.<br>
                     이 균형이 깨지면 <b>주파수(60Hz)</b>가 흔들려 정전이 발생합니다.<br><br>
                     <b>[운영자의 핵심 임무]</b><br>
                     🔴 <b>전력 부족 시:</b> 주파수 하락 ➔ <b>[ESS 방전] / [DR(수요감축)]</b><br>
-                    🔵 <b>전력 과잉 시:</b> 주파수 상승 ➔ <b>[ESS 충전] / [출력제어]</b>
+                    🔵 <b>전력 과잉 시:</b> 주파수 상승 ➔ <b>[ESS 충전] / [신재생 출력제어]</b>
                 </div>
             </div>
             <div class="slide-footer">
@@ -125,7 +124,7 @@
             <div class="slide-footer">
                 <div class="credits"></div>
                 <div>
-                    <button class="btn-ppt" onclick="nextSlide(1)">◀ 이전</button>
+                    <button class="btn-ppt" onclick="nextSlide(2)">◀ 이전</button>
                     <button class="btn-ppt" onclick="nextSlide(4)">다음 ▶</button>
                 </div>
             </div>
@@ -151,11 +150,11 @@
 
                     <span style="color:#00d2ff;">🔵 <b>발전 > 수요 (전력 과잉)</b></span><br>
                     "전기가 넘쳐요! 남는 전기를 담거나 발전을 끄세요."<br>
-                    👉 <b>조치: [ESS 충전]</b> 또는 <b>[출력제어]</b>
+                    👉 <b>조치: [ESS 충전]</b> 또는 <b>[신재생 출력제어]</b>
                 </div>
             </div>
             <div class="slide-footer">
-                <button class="btn-ppt" onclick="nextSlide(2)">◀ 이전</button>
+                <button class="btn-ppt" onclick="nextSlide(3)">◀ 이전</button>
                 <button class="btn-ppt btn-start" onclick="startGame()">튜토리얼 시작 🚀</button>
             </div>
         </div>
@@ -189,7 +188,7 @@
                     <button class="ctrl-btn c-charge" id="btn-c" onclick="manual('charge')">ESS 충전</button>
                     <button class="ctrl-btn c-discharge" id="btn-d" onclick="manual('discharge')">ESS 방전</button>
                     <button class="ctrl-btn c-dr" id="btn-dr" onclick="toggleDR()">🏭 DR 발령</button>
-                    <button class="ctrl-btn c-cut" id="btn-cut" onclick="toggleCut()">✂️ 출력제어</button>
+                    <button class="ctrl-btn c-cut" id="btn-cut" onclick="toggleCut()">✂️ 신재생 출력제어</button>
                 </div>
                 <div style="margin-top:10px; font-size:12px; color:#aaa;">ESS 잔량: <span id="val-soc">50%</span></div>
             </div>
@@ -263,9 +262,9 @@
                 let btn = document.getElementById('btn-d'); btn.classList.add('unlocked'); btn.style.opacity='1'; btn.style.pointerEvents='auto';
                 setAIText("전력 부족 발생! 방전이 필요합니다.", "alert"); targetDemand=4000; targetSupply=2000;
             } else if(s===2) {
-                guide.innerHTML = "🚨 전력 과잉! <b>[출력제어]</b>를 누르세요!";
+                guide.innerHTML = "🚨 전력 과잉! <b>[신재생 출력제어]</b>를 누르세요!";
                 let btn = document.getElementById('btn-cut'); btn.classList.add('unlocked'); btn.style.opacity='1'; btn.style.pointerEvents='auto';
-                setAIText("발전량 과다! 출력제어 하세요.", "alert"); targetDemand=2000; targetSupply=4000; action='stop'; updateBtns();
+                setAIText("발전량 과다! 신재생 출력제어 하세요.", "alert"); targetDemand=2000; targetSupply=4000; action='stop'; updateBtns();
             } else if(s===3) {
                 guide.innerHTML = "🎉 튜토리얼 완료! 실전 모드로 전환됩니다.";
                 setTimeout(initRealMode, 2000);
@@ -397,7 +396,7 @@
 
         function aiLogic() {
             if(isAuto) { setAIText("AI 자동 제어 중입니다.", "happy"); return; }
-            if(supply > demand + 200) setAIText("과잉 공급! [ESS충전] 또는 [출력제어]!", "worry");
+            if(supply > demand + 200) setAIText("과잉 공급! [ESS충전] 또는 [신재생 출력제어]!", "worry");
             else if(supply < demand - 200) setAIText("전력 부족! [ESS방전] 또는 [DR]!", "alert");
             else setAIText("안정적입니다.", "neutral");
         }
