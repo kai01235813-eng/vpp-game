@@ -16,10 +16,22 @@
             background: rgba(0,0,0,0.98); z-index: 9999;
             display: flex; justify-content: center; align-items: center;
         }
-        .slide-card { width: 90%; max-width: 800px; height: 89%; max-height: 1000px; background: #fff; color: #333; border-radius: 20px; padding: 30px; display: none; flex-direction: column; box-shadow: 0 0 50px rgba(0, 210, 255, 0.5); }
+        .slide-card {
+            width: 95%; max-width: 800px; /* 너비 확장 */
+            height: 90%; max-height: 800px; /* 높이 대폭 확장 */
+            background: #fff; color: #333;
+            border-radius: 20px; padding: 25px; box-sizing: border-box;
+            display: none; flex-direction: column;
+            box-shadow: 0 0 60px rgba(0, 210, 255, 0.6);
+        }
         .slide-card.active { display: flex; animation: fadeIn 0.3s; }
         .slide-header { font-family: 'Jua', sans-serif; font-size: 28px; color: #0054a6; border-bottom: 3px solid #0054a6; padding-bottom: 15px; margin-bottom: 15px; flex-shrink: 0; }
-        .slide-body { font-size: 16px; line-height: 1.6; flex: 1; overflow-y: auto; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+       .slide-body { 
+            font-size: 16px; line-height: 1.5; flex: 1; 
+            overflow-y: auto; min-height: 0; /* 스크롤 필수 설정 */
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            padding: 10px 0;
+        }
         .slide-text-box { width: 100%; text-align: left; background: #f0f4f8; padding: 20px; border-radius: 10px; }
         .slide-footer { margin-top: 20px; display: flex; justify-content: flex-end; gap: 15px; flex-shrink: 0; }
         .btn-ppt { padding: 12px 25px; border: none; border-radius: 10px; font-size: 18px; background: #0054a6; color: white; font-family: 'Jua'; cursor: pointer; }
