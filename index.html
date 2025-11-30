@@ -11,8 +11,12 @@
         body { margin: 0; overflow: hidden; background: var(--bg); font-family: 'Noto Sans KR', sans-serif; color: var(--text); display: flex; flex-direction: column; height: 100vh; user-select: none; }
 
         /* PPT */
-        #intro-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.98); z-index: 9999; display: flex; justify-content: center; align-items: center; }
-        .slide-card { width: 90%; max-width: 800px; height: 85%; background: #fff; color: #333; border-radius: 20px; padding: 30px; display: none; flex-direction: column; box-shadow: 0 0 50px rgba(0, 210, 255, 0.5); }
+        #intro-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.98); z-index: 9999;
+            display: flex; justify-content: center; align-items: center;
+        }
+        .slide-card { width: 90%; max-width: 800px; height: 89%; max-height: 750px; background: #fff; color: #333; border-radius: 20px; padding: 30px; display: none; flex-direction: column; box-shadow: 0 0 50px rgba(0, 210, 255, 0.5); }
         .slide-card.active { display: flex; animation: fadeIn 0.3s; }
         .slide-header { font-family: 'Jua', sans-serif; font-size: 28px; color: #0054a6; border-bottom: 3px solid #0054a6; padding-bottom: 15px; margin-bottom: 15px; flex-shrink: 0; }
         .slide-body { font-size: 16px; line-height: 1.6; flex: 1; overflow-y: auto; display: flex; flex-direction: column; justify-content: center; align-items: center; }
@@ -47,7 +51,7 @@
         .ctrl-btn.unlocked { opacity: 1; pointer-events: auto; box-shadow: 0 0 5px rgba(255,255,255,0.2); }
         .ctrl-btn.active { opacity: 1; transform: scale(1.05); box-shadow: 0 0 10px currentColor; border: 2px solid #fff; }
         .c-charge { background: var(--danger); } .c-discharge { background: var(--success); }
-        .c-dr { background: #9c27b0; grid-column: span 2; } .c-cut { background: #ff9800; grid-column: span 2; }
+        .c-DR(수요감축) { background: #9c27b0; grid-column: span 2; } .c-cut { background: #ff9800; grid-column: span 2; }
 
         .ai-switch { background: #333; color: #aaa; padding: 8px; border-radius: 8px; text-align: center; cursor: pointer; font-weight: bold; border: 1px solid #555; margin-bottom: 5px; font-size: 13px; pointer-events: none; opacity: 0.5; }
         .ai-switch.on { background: var(--success); color: #000; border-color: #fff; }
@@ -72,7 +76,7 @@
                 <div class="slide-icon">🔌 + ☀️ + 💻 = 🏭</div>
                 <div class="slide-text-box">
                     <b>[정의]</b> ICT 기술로 분산된 에너지를 연결하여 <b>하나의 발전소처럼 제어</b>하는 시스템입니다.<br><br>
-                    <b>[목적]</b> 재생에너지의 불안정함을 <b>ESS</b>와 <b>제어 기술</b>로 보완합니다.
+                    <b>[목적]</b> 재생에너지의 불안정함을 <b>ESS</b>와 <b>제어 기술</b>로 보완합니다. <br><br>
                     <b>[핵심 가치]</b><br>
                     불규칙한 재생에너지의 변동성을 <b>제어 가능한 자원(ESS)</b>으로 보완하여, 안정적인 전력 공급을 가능하게 합니다.
                 </div>
@@ -93,12 +97,12 @@
                 <div class="slide-text-box">
                     전력망은 <b>생산과 소비의 균형(60Hz)</b>이 생명입니다.<br><br>
                     <b>[운영 매뉴얼]</b><br>
-                    - 발전량 부족 시 : <b style="color:red">정전 위험!</b> ➔ [ESS 방전] / [DR]<br>
+                    - 발전량 부족 시 : <b style="color:red">정전 위험!</b> ➔ [ESS 방전] / [DR(수요감축)]<br>
                     - 발전량 과잉 시 : <b style="color:orange">과부하 위험!</b> ➔ [ESS 충전] / [신재생 출력제어]
                     전력망은 <b>생산(공급)과 소비(수요)의 균형</b>이 핵심입니다.<br>
                     이 균형이 깨지면 <b>주파수(60Hz)</b>가 흔들려 정전이 발생합니다.<br><br>
                     <b>[운영자의 핵심 임무]</b><br>
-                    🔴 <b>전력 부족 시:</b> 주파수 하락 ➔ <b>[ESS 방전] / [DR(수요감축)]</b><br>
+                    🔴 <b>전력 부족 시:</b> 주파수 하락 ➔ <b>[ESS 방전] / [DR(수요감축)(수요감축)]</b><br>
                     🔵 <b>전력 과잉 시:</b> 주파수 상승 ➔ <b>[ESS 충전] / [신재생 출력제어]</b>
                 </div>
             </div>
@@ -117,7 +121,7 @@
                     <b>[직관적 학습]</b><br>
                     복잡한 전력 계통 운영 원리를 <b>시뮬레이션 게임</b> 형태로 구현하여,<br>
                     누구나 쉽고 재미있게 <b>VPP의 개념과 필요성</b>을 이해하도록 돕습니다.<br><br>
-                    <b>[미래 역량 강화]</b><br>
+                    <b>[미래의 ICT시스템 준비]</b><br>
                     에너지 대전환 시대에 맞춰, <b>디지털 기반의 전력망 운영 경험</b>을 선제적으로 제공합니다.
                 </div>
             </div>
@@ -146,7 +150,7 @@
                     
                     <span style="color:#ff5252;">🔴 <b>발전 < 수요 (전력 부족)</b></span><br>
                     "전기가 모자라요! 공급을 늘리거나 수요를 줄이세요."<br>
-                    👉 <b>조치: [ESS 방전]</b> 또는 <b>[DR(수요감축)]</b><br><br>
+                    👉 <b>조치: [ESS 방전]</b> 또는 <b>[DR(수요감축)(수요감축)]</b><br><br>
 
                     <span style="color:#00d2ff;">🔵 <b>발전 > 수요 (전력 과잉)</b></span><br>
                     "전기가 넘쳐요! 남는 전기를 담거나 발전을 끄세요."<br>
@@ -187,7 +191,7 @@
                 <div class="btn-grid">
                     <button class="ctrl-btn c-charge" id="btn-c" onclick="manual('charge')">ESS 충전</button>
                     <button class="ctrl-btn c-discharge" id="btn-d" onclick="manual('discharge')">ESS 방전</button>
-                    <button class="ctrl-btn c-dr" id="btn-dr" onclick="toggleDR()">🏭 DR 발령</button>
+                    <button class="ctrl-btn c-DR(수요감축)" id="btn-DR(수요감축)" onclick="toggleDR(수요감축)()">🏭 DR(수요감축) 발령</button>
                     <button class="ctrl-btn c-cut" id="btn-cut" onclick="toggleCut()">✂️ 신재생 출력제어</button>
                 </div>
                 <div style="margin-top:10px; font-size:12px; color:#aaa;">ESS 잔량: <span id="val-soc">50%</span></div>
@@ -219,7 +223,7 @@
         let isRunning = false, isAuto = false, mode = 'PPT', step = 0;
         let time = 720, level = 1, freq = 60.00;
         let supply = 0, demand = 0, targetSupply = 0, targetDemand = 0;
-        let essCap = 2000, essLevel = 1000, action = 'stop', drOn = false, cutOn = false;
+        let essCap = 2000, essLevel = 1000, action = 'stop', DR(수요감축)On = false, cutOn = false;
         let pendingExpansion = null;
 
         const nodes = [
@@ -277,7 +281,7 @@
             document.querySelectorAll('.ctrl-btn').forEach(b => { b.classList.add('unlocked'); b.style.opacity='1'; b.style.pointerEvents='auto'; });
             document.getElementById('btn-auto').style.pointerEvents='auto'; document.getElementById('btn-auto').style.opacity='1';
             
-            action='stop'; drOn=false; cutOn=false; updateBtns();
+            action='stop'; DR(수요감축)On=false; cutOn=false; updateBtns();
             level = 1; time = 720;
             
             // ★ 중요: 실전 모드 설비 대거 추가 (수치 0 방지) ★
@@ -296,7 +300,7 @@
             action = (action===act) ? 'stop' : act; updateBtns();
         }
 
-        function toggleDR() { if(!isAuto && mode==='REAL') { drOn=!drOn; updateBtns(); } }
+        function toggleDR(수요감축)() { if(!isAuto && mode==='REAL') { DR(수요감축)On=!DR(수요감축)On; updateBtns(); } }
         
         function toggleCut() { 
             if(isAuto) return;
@@ -310,18 +314,18 @@
         function toggleAuto() {
             isAuto = !isAuto;
             document.getElementById('btn-auto').classList.toggle('on', isAuto);
-            if(!isAuto) { action='stop'; drOn=false; cutOn=false; updateBtns(); }
+            if(!isAuto) { action='stop'; DR(수요감축)On=false; cutOn=false; updateBtns(); }
         }
 
         function updateBtns() {
             document.querySelectorAll('.ctrl-btn').forEach(b=>b.classList.remove('active'));
             if(action==='charge') document.getElementById('btn-c').classList.add('active');
             if(action==='discharge') document.getElementById('btn-d').classList.add('active');
-            if(drOn) document.getElementById('btn-dr').classList.add('active');
+            if(DR(수요감축)On) document.getElementById('btn-DR(수요감축)').classList.add('active');
             if(cutOn) document.getElementById('btn-cut').classList.add('active');
         }
 
-        function gameLoop() { if(isRunning) { updatePhysics(); if(mode==='REAL') aiLogic(); draw(); updateUI(); requestAnimationFrame(gameLoop); } }
+        function gameLoop() { if(isRunning) { updatePhysics(); if(mode==='REAL') aiLogic(); DR(수요감축)aw(); updateUI(); requestAnimationFrame(gameLoop); } }
 
         function updatePhysics() {
             time += TICK_SPEED;
@@ -343,7 +347,7 @@
                 objects.forEach(o=>{ if(o.type==='apt') baseLoad+=100; if(o.type==='factory') baseLoad+=300; });
                 
                 let tDem = baseLoad * curve;
-                if(drOn) tDem *= 0.8;
+                if(DR(수요감축)On) tDem *= 0.8;
 
                 let baseGen = 2000 + (level*100);
                 let reGen = 0;
@@ -389,15 +393,15 @@
 
         function autoControl(g, l) {
             if(g > l + 200) { if(essLevel<essCap){action='charge'; cutOn=false;} else{action='stop'; cutOn=true;} }
-            else if(g < l - 200) { if(essLevel>0){action='discharge'; drOn=false;} else{action='stop'; drOn=true;} }
-            else { action='stop'; cutOn=false; drOn=false; }
+            else if(g < l - 200) { if(essLevel>0){action='discharge'; DR(수요감축)On=false;} else{action='stop'; DR(수요감축)On=true;} }
+            else { action='stop'; cutOn=false; DR(수요감축)On=false; }
             updateBtns();
         }
 
         function aiLogic() {
             if(isAuto) { setAIText("AI 자동 제어 중입니다.", "happy"); return; }
             if(supply > demand + 200) setAIText("과잉 공급! [ESS충전] 또는 [신재생 출력제어]!", "worry");
-            else if(supply < demand - 200) setAIText("전력 부족! [ESS방전] 또는 [DR]!", "alert");
+            else if(supply < demand - 200) setAIText("전력 부족! [ESS방전] 또는 [DR(수요감축)]!", "alert");
             else setAIText("안정적입니다.", "neutral");
         }
 
@@ -412,7 +416,7 @@
             else { box.style.borderColor='#444'; face.innerText='🤖'; }
         }
 
-        function draw() {
+        function DR(수요감축)aw() {
             let w=canvas.width; let h=canvas.height;
             ctx.clearRect(0,0,w,h);
             ctx.strokeStyle='rgba(255,255,255,0.1)'; ctx.lineWidth=2; ctx.beginPath();
