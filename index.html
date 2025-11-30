@@ -281,7 +281,9 @@
         function startGame() {
             document.getElementById('intro-overlay').style.display = 'none';
             resize(); isRunning = true;
+            objects = []; // 초기화
             spawn('solar','honam',2); spawn('wind','jeju',1); spawn('apt','seoul',3);
+            updateUI(); // 즉시 반영
             startTutorial(); gameLoop();
         }
 
@@ -296,7 +298,7 @@
             setTutorialStep(1);
         }
 
-        function setTutorialStep(s) {
+    function setTutorialStep(s) {
             step = s;
             const guide = document.getElementById('guide-overlay'); guide.style.display = 'block';
             document.querySelectorAll('.ctrl-btn').forEach(b => { b.classList.remove('unlocked','active'); b.style.opacity='0.2'; b.style.pointerEvents='none'; });
@@ -304,11 +306,16 @@
             if(s===1) {
                 guide.innerHTML = "🚨 전력 부족! <b>[ESS 방전]</b> 버튼을 누르세요!";
                 let btn = document.getElementById('btn-d'); btn.classList.add('unlocked'); btn.style.opacity='1'; btn.style.pointerEvents='auto';
-                setAIText("전력 부족 발생! 방전이 필요합니다.", "alert"); targetDemand=4000; targetSupply=2000;
+                setAIText("전력 부족 발생! 방전이 필요합니다.", "alert"); 
+                // ★ 튜토리얼 수치 강제 적용
+                supply = 2000; demand = 4000; targetSupply = 2000; targetDemand = 4000;
+                updateUI();
             } else if(s===2) {
-                guide.innerHTML = "🚨 전력 과잉! <b>[신재생 출력제어]</b>를 누르세요!";
+                guide.innerHTML = "🚨 전력 과잉! <b>[출력제어]</b>를 누르세요!";
                 let btn = document.getElementById('btn-cut'); btn.classList.add('unlocked'); btn.style.opacity='1'; btn.style.pointerEvents='auto';
-                setAIText("발전량 과다! 신재생 출력제어 하세요.", "alert"); targetDemand=2000; targetSupply=4000; action='stop'; updateBtns();
+                setAIText("발전량 과다! 출력제어 하세요.", "alert"); 
+                supply = 4000; demand = 2000; targetSupply = 4000; targetDemand = 2000;
+                action='stop'; updateBtns(); updateUI();
             } else if(s===3) {
                 guide.innerHTML = "🎉 튜토리얼 완료! 실전 모드로 전환됩니다.";
                 setTimeout(initRealMode, 2000);
