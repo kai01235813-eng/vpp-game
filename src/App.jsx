@@ -29,7 +29,6 @@ export default function App() {
   const [ui, setUi] = useState(() => snapshot(sim.current));
   const [banner, setBanner] = useState(null);
   const [selRegion, setSelRegion] = useState(null);
-  const [briefIdx, setBriefIdx] = useState(0);
   const bannerTimer = useRef(null);
   const yearRef = useRef(year);
   const prevYear = useRef(year);
@@ -91,12 +90,6 @@ export default function App() {
   }, [year, showBanner]);
 
 
-  // 지역 브리핑 자동 순환 (지역별 특성·정책 설명)
-  useEffect(() => {
-    if (!started) return;
-    const id = setInterval(() => setBriefIdx((i) => (i + 1) % REGIONS.length), 9000);
-    return () => clearInterval(id);
-  }, [started]);
 
 
   return (
@@ -110,9 +103,9 @@ export default function App() {
           onTogglePlay={() => setPlaying((p) => !p)} />
       )}
       {started && <NationalPanel year={year} stats={stats} />}
-      {started && (selRegion
-        ? <RegionCard regionId={selRegion} plants={FALLBACK_PLANTS} subs={visibleSubs} onClose={() => setSelRegion(null)} />
-        : <Briefing region={REGIONS[briefIdx]} />)}
+      {started && selRegion && (
+        <RegionCard regionId={selRegion} plants={FALLBACK_PLANTS} subs={visibleSubs} onClose={() => setSelRegion(null)} />
+      )}
       {!started && <Intro onStart={() => setStarted(true)} />}
     </div>
   );
@@ -124,7 +117,7 @@ function RegionCard({ regionId, plants, subs, onClose }) {
   const subCount = subs.filter((s) => s.region === regionId).length;
   const majors = MAJOR_SUBS[regionId] || [];
   return (
-    <div className="glass pop" style={{ position: 'absolute', right: 10, bottom: 14, zIndex: 31, width: 250, borderRadius: 18, padding: 14 }}>
+    <div className="glass pop" style={{ position: 'absolute', left: 10, bottom: 14, zIndex: 31, width: 250, borderRadius: 18, padding: 14 }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
         <span className="font-round" style={{ fontSize: 16, color: '#334155', borderBottom: `3px solid ${region.tint}` }}>{region.name}</span>
         <button onClick={onClose} style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: '#94a3b8', fontSize: 18 }}>✕</button>
