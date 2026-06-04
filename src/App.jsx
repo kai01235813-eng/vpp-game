@@ -96,15 +96,13 @@ export default function App() {
     return () => clearInterval(id);
   }, [started, playing]);
 
-  // 마일스톤 감지
+  // 타임라인 이벤트 → 라이브 피드
   useEffect(() => {
     const py = prevYear.current;
-    MILESTONES.forEach((m) => {
-      if (py < m.year && year >= m.year) showBanner(`📅 ${m.year}  ${m.text}${m.src ? '  · 출처: ' + m.src : ''}`, 5500);
-    });
+    TIMELINE_EVENTS.forEach((e) => { if (py < e.year && year >= e.year) addFeed(e.text, e.color); });
     if (year >= END_YEAR && py < END_YEAR) setPlaying(false);
     prevYear.current = year;
-  }, [year, showBanner]);
+  }, [year, addFeed]);
 
 
 
