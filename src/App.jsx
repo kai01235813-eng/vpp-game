@@ -22,9 +22,9 @@ function snapshot(s) {
 }
 
 const TIMELINE_EVENTS = [
-  ...MILESTONES.map((m) => ({ year: m.year, text: `📅 ${m.year} ${m.text}`, color: '#fbbf24' })),
-  ...DEMAND_HUBS.map((h) => ({ year: h.from || 2025, text: `🔆 ${h.name} 전력수요 본격화 · ${h.info}`, color: '#f97316' })),
-  ...TRANSMISSION.filter((l) => (l.from || 2025) > 2025).map((l) => ({ year: l.from, text: `🔌 ${l.name} 준공`, color: '#22d3ee' })),
+  ...MILESTONES.map((m) => ({ year: m.year, text: `📅 ${m.year} ${m.text}`, color: '#fbbf24', detail: m.text, src: m.src || '제11차 전력수급기본계획' })),
+  ...DEMAND_HUBS.map((h) => ({ year: h.from || 2025, text: `🔆 ${h.name} 전력수요 본격화 · ${h.info}`, color: '#f97316', detail: `${(DEMAND_STYLE[h.type] || {}).name || ''} 전력수요 거점 · 규모 ${h.info} · ${h.from || 2025}년~`, src: `${h.policy} (${h.src})` })),
+  ...TRANSMISSION.filter((l) => (l.from || 2025) > 2025).map((l) => ({ year: l.from, text: `🔌 ${l.name} 준공`, color: '#22d3ee', detail: `${l.type === 'hvdc' ? 'HVDC 에너지고속도로' : '765kV 교류 송전'} · ${l.from}년 준공 — 해안 재생에너지를 수도권·산업으로 전송하는 계통 골격`, src: '제11차 장기 송변전설비계획 (한전)' })),
 ].sort((a, b) => a.year - b.year);
 
 const YEAR_STEP = 0.06; // 틱당 진행 (≈65초에 2025→2038)
@@ -38,12 +38,13 @@ export default function App() {
   const [banner, setBanner] = useState(null);
   const [selRegion, setSelRegion] = useState(null);
   const [showGuide, setShowGuide] = useState(false);
+  const [feedDetail, setFeedDetail] = useState(null);
   const mobile = useIsMobile();
   const [feed, setFeed] = useState([]);
   const feedId = useRef(0);
-  const addFeed = useCallback((text, color) => {
+  const addFeed = useCallback((text, color, detail, src) => {
     const id = feedId.current++;
-    setFeed((f) => [...f.slice(-6), { id, text, color }]);
+    setFeed((f) => [...f.slice(-6), { id, text, color, detail, src }]);
   }, []);
   const removeFeed = useCallback((id) => setFeed((f) => f.filter((x) => x.id !== id)), []);
   const bannerTimer = useRef(null);
@@ -99,7 +100,7 @@ export default function App() {
   // 타임라인 이벤트 → 라이브 피드
   useEffect(() => {
     const py = prevYear.current;
-    TIMELINE_EVENTS.forEach((e) => { if (py < e.year && year >= e.year) addFeed(e.text, e.color); });
+    TIMELINE_EVENTS.forEach((e) => { if (py < e.year && year >= e.year) addFeed(e.text, e.color, e.detail, e.src); });
     if (year >= END_YEAR && py < END_YEAR) setPlaying(false);
     prevYear.current = year;
   }, [year, addFeed]);
@@ -117,7 +118,8 @@ export default function App() {
           onYear={(y) => { setYear(y); setPlaying(false); }}
           onTogglePlay={() => setPlaying((p) => !p)} />
       )}
-      {started && <FeedView items={feed} mobile={mobile} playing={playing} onDone={removeFeed} />}
+      {started && <FeedView items={feed} mobile={mobile} playing={playing} onDone={removeFeed} onSelect={setFeedDetail} />}
+      {started && feedDetail && <FeedDetailModal item={feedDetail} onClose={() => setFeedDetail(null)} />}
       {started && <NationalPanel year={year} stats={stats} />}
       {started && selRegion && (
         <RegionCard regionId={selRegion} plants={FALLBACK_PLANTS} subs={visibleSubs} onClose={() => setSelRegion(null)} />
@@ -289,13 +291,30 @@ function NationalPanel({ year, stats }) {
   );
 }
 
-function FeedView({ items, mobile, playing, onDone }) {
+function FeedView({ items, mobile, playing, onDone, onSelect }) {
   if (!items.length) return null;
   return (
     <div style={{ position: 'absolute', bottom: mobile ? 86 : 98, left: '50%', transform: 'translateX(-50%)', zIndex: 19, width: mobile ? '92vw' : 'min(520px, 90vw)', display: 'flex', flexDirection: 'column', gap: 4, alignItems: 'center', pointerEvents: 'none' }}>
       {items.map((it) => (
-        <div key={it.id} className="feeditem font-round" onAnimationEnd={() => onDone && onDone(it.id)} style={{ animationPlayState: playing ? 'running' : 'paused', background: 'rgba(255,255,255,0.82)', border: `1.5px solid ${it.color}`, color: '#334155', borderRadius: 999, padding: '3px 12px', fontSize: mobile ? 11 : 12, fontWeight: 600, whiteSpace: 'nowrap', maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis', boxShadow: '0 4px 10px rgba(120,150,190,0.18)' }}>{it.text}</div>
+        <div key={it.id} className="feeditem font-round" onAnimationEnd={() => onDone && onDone(it.id)} onClick={() => onSelect && onSelect(it)} title="출처·근거 보기" style={{ cursor: 'pointer', pointerEvents: 'auto', animationPlayState: playing ? 'running' : 'paused', background: 'rgba(255,255,255,0.88)', border: `1.5px solid ${it.color}`, color: '#334155', borderRadius: 999, padding: '3px 12px', fontSize: mobile ? 11 : 12, fontWeight: 600, whiteSpace: 'nowrap', maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis', boxShadow: '0 4px 10px rgba(120,150,190,0.18)' }}>{it.text}</div>
       ))}
+    </div>
+  );
+}
+
+function FeedDetailModal({ item, onClose }) {
+  return (
+    <div onClick={onClose} className="fixed inset-0 z-50 flex items-center justify-center px-4" style={{ background: 'rgba(30,41,59,0.4)', backdropFilter: 'blur(4px)' }}>
+      <div onClick={(e) => e.stopPropagation()} className="pop glass" style={{ width: '100%', maxWidth: 420, borderRadius: 20, padding: 18 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 10 }}>
+          <div className="font-round" style={{ fontSize: 15, color: '#334155', lineHeight: 1.35 }}>{item.text}</div>
+          <button onClick={onClose} style={{ flexShrink: 0, border: 'none', background: 'rgba(255,255,255,0.7)', borderRadius: 999, width: 28, height: 28, cursor: 'pointer', color: '#64748b', fontSize: 15 }}>✕</button>
+        </div>
+        <div className="h-1 w-full rounded-full" style={{ margin: '10px 0', background: `linear-gradient(90deg, ${item.color}, rgba(255,255,255,0))` }} />
+        {item.detail && <div style={{ fontSize: 13, color: '#5b6b7d', lineHeight: 1.55 }}>{item.detail}</div>}
+        <div style={{ fontSize: 11, color: '#0ea5e9', fontWeight: 700, marginTop: 12 }}>📑 근거·출처</div>
+        <div style={{ fontSize: 12, color: '#64748b', marginTop: 3 }}>{item.src || '정부 공식 계획'}</div>
+      </div>
     </div>
   );
 }
