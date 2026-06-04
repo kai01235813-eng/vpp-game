@@ -28,13 +28,17 @@ function useGlowTexture() {
   }, []);
 }
 
-function Hub({ h, tex }) {
+const FADE = 1.2;
+const clamp01 = (v) => Math.max(0, Math.min(1, v));
+
+function Hub({ h, tex, year }) {
   const [hover, setHover] = useState(false);
   const [x, z] = toWorld(h.lat, h.lon);
   const st = DEMAND_STYLE[h.type] || DEMAND_STYLE.semi;
   const col = heat(h.size);              // 색 = 전력수요 규모
-  const r = 1.4 * h.size;                // 크기 = 전력수요 규모
-  const op = 0.5 + Math.min(0.28, (h.size - 1.3) * 0.18);
+  const p = clamp01((year - (h.from || 2025)) / FADE); // 점진 등장
+  const r = 1.4 * h.size * (0.35 + 0.65 * p);
+  const op = (0.5 + Math.min(0.28, (h.size - 1.3) * 0.18)) * p;
   return (
     <group position={[x, 0, z]} onPointerOver={(e) => { e.stopPropagation(); setHover(true); }} onPointerOut={() => setHover(false)}>
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.07, 0]}>
@@ -45,7 +49,7 @@ function Hub({ h, tex }) {
         <planeGeometry args={[r * 1.05, r * 1.05]} />
         <meshBasicMaterial map={tex} color={col} transparent opacity={op * 0.9} depthWrite={false} />
       </mesh>
-      <mesh position={[0, 0.2, 0]}>
+      <mesh position={[0, 0.2, 0]} scale={0.4 + 0.6 * p}>
         <sphereGeometry args={[0.16, 12, 12]} />
         <meshStandardMaterial color={col} emissive={col} emissiveIntensity={0.9} />
       </mesh>
@@ -64,6 +68,6 @@ function Hub({ h, tex }) {
 
 export default function DemandLayer({ year = 2025 }) {
   const tex = useGlowTexture();
-  const hubs = DEMAND_HUBS.filter((h) => (h.from || 2025) <= year);
-  return <group>{hubs.map((h) => <Hub key={h.name} h={h} tex={tex} />)}</group>;
+  const hubs = DEMAND_HUBS.filter((h) => year >= (h.from || 2025) - 0.01);
+  return <group>{hubs.map((h) => <Hub key={h.name} h={h} tex={tex} year={year} />)}</group>;
 }

@@ -111,7 +111,7 @@ export default function Scene({ objects, plants = [], subs = [], sun, windFactor
         <RegionPads onSelect={onSelectRegion} />
         <Buildings objects={objects} sun={sun} windFactor={windFactor} />
         <PlantsLayer plants={plants} />
-        <SubstationsLayer subs={subs} />
+        <SubstationsLayer subs={subs} year={year} />
         <DemandLayer year={year} />
         <Transmission year={year} />
         <Rain active={weather === 'rain'} />
