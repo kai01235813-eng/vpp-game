@@ -32,8 +32,9 @@ const YEAR_STEP = 0.06; // 틱당 진행 (≈65초에 2025→2038)
 export default function App() {
   const sim = useRef(initialState());
   const [started, setStarted] = useState(false);
-  const [year, setYear] = useState(START_YEAR);
-  const [playing, setPlaying] = useState(true);
+  const initYear = (() => { try { const q = parseInt(new URLSearchParams(window.location.search).get('year'), 10); return q >= START_YEAR && q <= END_YEAR ? q : START_YEAR; } catch (e) { return START_YEAR; } })();
+  const [year, setYear] = useState(initYear);
+  const [playing, setPlaying] = useState(initYear === START_YEAR);
   const [ui, setUi] = useState(() => snapshot(sim.current));
   const [banner, setBanner] = useState(null);
   const [selRegion, setSelRegion] = useState(null);
@@ -61,11 +62,23 @@ export default function App() {
   subsRef.current = visibleSubs;
   const stats = statsAt(year);
 
+  const onCapture = useCallback(() => {
+    const c = document.querySelector('canvas');
+    if (!c) return;
+    try { const a = document.createElement('a'); a.href = c.toDataURL('image/png'); a.download = `대한민국전력계통_${Math.floor(year)}년.png`; a.click(); } catch (e) {}
+  }, [year]);
+  const onShare = useCallback(() => {
+    const url = `${window.location.origin}${window.location.pathname}?year=${Math.floor(year)}`;
+    try { navigator.clipboard.writeText(url); } catch (e) {}
+    showBannerRef.current && showBannerRef.current(`🔗 ${Math.floor(year)}년 링크 복사됨`);
+  }, [year]);
+  const showBannerRef = useRef(null);
   const showBanner = useCallback((msg, ms = 3600) => {
     setBanner(msg);
     clearTimeout(bannerTimer.current);
     bannerTimer.current = setTimeout(() => setBanner(null), ms);
   }, []);
+  showBannerRef.current = showBanner;
 
   // 발전소 카운트(공급) — 하드코딩 주요 발전소 기준
   useEffect(() => {
@@ -113,7 +126,7 @@ export default function App() {
       <Scene objects={visible} plants={FALLBACK_PLANTS} subs={visibleSubs} sun={ui.sun} windFactor={ui.windFactor}
         hour={ui.hour} year={year} onSelectRegion={setSelRegion} />
       {started && (
-        <Hud ui={ui} banner={banner} stats={stats} onHelp={() => setShowGuide(true)}
+        <Hud ui={ui} banner={banner} stats={stats} onHelp={() => setShowGuide(true)} onCapture={onCapture} onShare={onShare}
           year={year} playing={playing}
           onYear={(y) => { setYear(y); setPlaying(false); }}
           onTogglePlay={() => setPlaying((p) => !p)} />

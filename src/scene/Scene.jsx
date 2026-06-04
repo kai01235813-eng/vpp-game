@@ -90,6 +90,7 @@ export default function Scene({ objects, plants = [], subs = [], sun, windFactor
   return (
     <Canvas
       shadows
+      gl={{ preserveDrawingBuffer: true }}
       dpr={[1, 2]}
       camera={{ position: [28, 24, 34], fov: 44 }}
       onCreated={({ scene }) => {

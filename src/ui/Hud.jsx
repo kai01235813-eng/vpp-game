@@ -1,6 +1,15 @@
 import { PLAN, START_YEAR, END_YEAR } from '../buildout.js';
 import { useIsMobile, MobilePanel } from '../useUI.jsx';
 
+const KEY_YEARS = [
+  { year: 2025, label: '현재' },
+  { year: 2030, label: '서해안 고속도로' },
+  { year: 2031, label: 'HVDC 1차' },
+  { year: 2032, label: '용인 반도체' },
+  { year: 2036, label: '석탄폐지' },
+  { year: 2038, label: '무탄소·U자' },
+];
+
 function GrowBar({ label, cur, base, end, unit, color, int }) {
   const fmt = (v) => (int ? Math.round(v).toLocaleString() : (v < 100 ? v.toFixed(1) : v.toFixed(0)));
   const fill = Math.max(0, Math.min(100, (cur / end) * 100));
@@ -42,7 +51,7 @@ function StatsCard({ stats, year }) {
   );
 }
 
-export default function Hud({ ui, banner, stats, year, playing, onYear, onTogglePlay, onHelp }) {
+export default function Hud({ ui, banner, stats, year, playing, onYear, onTogglePlay, onHelp, onCapture, onShare }) {
   const mobile = useIsMobile();
   return (
     <>
@@ -74,7 +83,18 @@ export default function Hud({ ui, banner, stats, year, playing, onYear, onToggle
         </div>
       )}
 
-      <div className="glass" style={{ position: 'absolute', bottom: mobile ? 8 : 14, left: '50%', transform: 'translateX(-50%)', zIndex: 20, borderRadius: 18, padding: mobile ? '8px 12px' : '10px 18px', width: mobile ? '94vw' : 'min(560px, 92vw)' }}>
+      <div className="glass" style={{ position: 'absolute', bottom: mobile ? 8 : 14, left: '50%', transform: 'translateX(-50%)', zIndex: 20, borderRadius: 18, padding: mobile ? '8px 12px' : '10px 18px', width: mobile ? '94vw' : 'min(580px, 92vw)' }}>
+        {/* 챕터 북마크 */}
+        <div style={{ display: 'flex', gap: 5, overflowX: 'auto', marginBottom: 8, paddingBottom: 2 }}>
+          {KEY_YEARS.map((k) => {
+            const active = Math.floor(year) >= k.year && (KEY_YEARS.filter((x) => x.year > k.year).every((x) => Math.floor(year) < x.year));
+            return (
+              <button key={k.year} onClick={() => onYear(k.year)} className="font-round" style={{ flexShrink: 0, border: 'none', cursor: 'pointer', borderRadius: 999, padding: mobile ? '3px 8px' : '3px 10px', fontSize: mobile ? 10 : 11, whiteSpace: 'nowrap', color: active ? '#fff' : '#64748b', background: active ? 'linear-gradient(135deg,#7dd3fc,#0ea5e9)' : 'rgba(255,255,255,0.7)', border: active ? 'none' : '1px solid rgba(148,163,184,0.3)' }}>
+                {k.year} {k.label}
+              </button>
+            );
+          })}
+        </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: mobile ? 8 : 12 }}>
           <button onClick={onTogglePlay} className="font-round" style={{ border: 'none', cursor: 'pointer', borderRadius: 14, padding: mobile ? '7px 10px' : '8px 14px', fontSize: mobile ? 12 : 14, color: '#fff', background: playing ? 'linear-gradient(135deg,#fda4af,#fb7185)' : 'linear-gradient(135deg,#6ee7b7,#34d399)', boxShadow: '0 6px 14px rgba(120,150,190,0.25)', whiteSpace: 'nowrap' }}>
             {playing ? '⏸' : '▶'}{!mobile && (playing ? ' 일시정지' : ' 재생')}
@@ -89,11 +109,17 @@ export default function Hud({ ui, banner, stats, year, playing, onYear, onToggle
           </div>
           <div className="font-round" style={{ fontSize: mobile ? 18 : 22, color: '#0ea5e9', minWidth: mobile ? 42 : 56, textAlign: 'right' }}>{Math.floor(year)}</div>
         </div>
-        {!mobile && (
-          <div style={{ fontSize: 10, color: '#94a3b8', textAlign: 'center', marginTop: 4 }}>
-            제11차 전력수급기본계획(2025.2 확정) 기반 실제 데이터 시뮬레이션 · 2025→2038
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 6, gap: 8 }}>
+          <div style={{ display: 'flex', gap: 6 }}>
+            <button onClick={onCapture} className="font-round" style={{ border: '1px solid rgba(148,163,184,0.3)', background: 'rgba(255,255,255,0.7)', color: '#64748b', borderRadius: 10, padding: '3px 9px', fontSize: 11, cursor: 'pointer' }}>📷 캡처</button>
+            <button onClick={onShare} className="font-round" style={{ border: '1px solid rgba(148,163,184,0.3)', background: 'rgba(255,255,255,0.7)', color: '#64748b', borderRadius: 10, padding: '3px 9px', fontSize: 11, cursor: 'pointer' }}>🔗 공유</button>
           </div>
-        )}
+          {!mobile && (
+            <div style={{ fontSize: 9.5, color: '#94a3b8', textAlign: 'right' }}>
+              제11차 전력수급기본계획(2025.2) 기반 · 2025→2038
+            </div>
+          )}
+        </div>
       </div>
     </>
   );
