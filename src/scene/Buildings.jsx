@@ -29,12 +29,12 @@ function Item({ o, sun, windFactor }) {
   });
 
   let inner;
-  if (o.type === 'apt') inner = <KenneyModel name={pickModel(CITY, o.id)} targetH={0.7} tint={pickColor(APT_COLORS, o.id)} />;
-  else if (o.type === 'factory') inner = <KenneyModel name={pickModel(FACTORY, o.id)} targetH={0.6} tint={pickColor(FAC_COLORS, o.id)} />;
+  if (o.type === 'apt') inner = <KenneyModel name={pickModel(CITY, o.id)} targetH={0.45} tint={pickColor(APT_COLORS, o.id)} />;
+  else if (o.type === 'factory') inner = <KenneyModel name={pickModel(FACTORY, o.id)} targetH={0.4} tint={pickColor(FAC_COLORS, o.id)} />;
   else if (o.type === 'solar') inner = <group scale={0.62}><Solar sun={sun} /></group>;
   else if (o.type === 'wind') inner = <group scale={0.6}><Wind windFactor={windFactor} /></group>;
   else if (o.type === 'nuclear') inner = <group scale={0.95}><Nuclear /></group>;
-  else if (o.type === 'datacenter') inner = <group scale={0.32}><DataCenter /></group>;
+  else if (o.type === 'datacenter') inner = <group scale={0.22}><DataCenter /></group>;
   else if (o.type === 'substation') inner = <group scale={0.7}><Substation /></group>;
 
   return (

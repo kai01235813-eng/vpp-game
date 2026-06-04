@@ -5,7 +5,7 @@ import Intro from './ui/Intro.jsx';
 import { initialState, step, triggerEvent, coach, TICK_MS } from './sim.js';
 import { TYPE_INFO, regionById, REGIONS } from './regions.js';
 import { visibleAt, statsAt, MILESTONES, PHASES, phaseAt, uStage, START_YEAR, END_YEAR } from './buildout.js';
-import { FALLBACK_PLANTS, PLANT_STYLE, MAJOR_SUBS, provinceOf, REGION_POLICY } from './geo.js';
+import { FALLBACK_PLANTS, PLANT_STYLE, MAJOR_SUBS, provinceOf, REGION_POLICY, DEMAND_HUBS, DEMAND_STYLE } from './geo.js';
 import { visibleSubsAt } from './substations.js';
 import { useIsMobile, MobilePanel } from './useUI.jsx';
 
@@ -138,6 +138,20 @@ function RegionCard({ regionId, plants, subs, onClose }) {
           <span key={m} style={{ fontSize: 11, background: 'rgba(245,158,11,0.12)', border: '1px solid rgba(245,158,11,0.4)', color: '#b45309', borderRadius: 8, padding: '1px 6px' }}>🔌 {m}</span>
         ))}
       </div>
+      {DEMAND_HUBS.filter((h) => h.region === regionId).length > 0 && (
+        <div style={{ marginTop: 8 }}>
+          <div style={{ fontSize: 11, color: '#0ea5e9', fontWeight: 700, marginBottom: 3 }}>전력수요 거점 (정책 기반)</div>
+          {DEMAND_HUBS.filter((h) => h.region === regionId).map((h) => {
+            const st = DEMAND_STYLE[h.type];
+            return (
+              <div key={h.name} style={{ fontSize: 11.5, color: '#5b6b7d', marginBottom: 3 }}>
+                <span style={{ display: 'flex', gap: 4 }}><span>{st.icon}</span><span><b style={{ color: '#334155' }}>{h.name}</b> <span style={{ color: st.color }}>{h.info}</span></span></span>
+                <span style={{ fontSize: 9.5, color: '#94a3b8' }}>{h.policy} · {h.from}년~</span>
+              </div>
+            );
+          })}
+        </div>
+      )}
       {REGION_POLICY[regionId] && (
         <div style={{ marginTop: 10, paddingTop: 8, borderTop: '1px solid rgba(148,163,184,0.25)' }}>
           <div style={{ fontSize: 11, color: '#0ea5e9', fontWeight: 700 }}>미래 에너지정책</div>
@@ -237,6 +251,7 @@ function NationalBody({ year, stats }) {
       <div style={{ marginTop: 8, paddingTop: 8, borderTop: '1px solid rgba(148,163,184,0.25)' }}>
         <div style={{ fontSize: 10, color: '#94a3b8', fontWeight: 700 }}>범례</div>
         <Legend />
+        <div style={{ fontSize: 9.5, color: '#64748b', marginTop: 6, lineHeight: 1.4 }}>🔆 반투명 글로우 = 정책 기반 <b>전력수요 거점</b>(반도체·이차전지·디스플레이·데이터센터·석유화학·제철). 국가첨단전략산업 특화단지(2023, 614조원)·데이터센터 정책 반영.</div>
         <div style={{ fontSize: 9.5, color: '#94a3b8', marginTop: 6, lineHeight: 1.4 }}>출처: 제11차 전력수급기본계획·송변전설비계획, 제5차 국토종합계획, 제2차 국가도로망종합계획, 산업부 수소특화단지·분산에너지, 한전</div>
       </div>
     </div>

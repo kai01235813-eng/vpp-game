@@ -147,3 +147,30 @@ export const HIGHWAYS = [
   { name: '당진영덕고속도로', path: [[36.9, 126.6], [36.65, 127.2], [36.5, 128.2], [36.41, 129.37]] },
   { name: '익산포항고속도로', path: [[35.94, 126.96], [35.82, 127.6], [35.9, 128.2], [36.02, 129.36]] },
 ];
+
+// 정책 기반 대규모 전력수요 거점 (국가첨단전략산업 특화단지 2023·11차 전기본·데이터센터 정책)
+// size = 글로우 반경 가중(상대), info = 규모, policy = 근거, from = 본격화 연도
+export const DEMAND_HUBS = [
+  { name: '용인 반도체 클러스터', lat: 37.18, lon: 127.21, type: 'semi', region: 'sudogwon', size: 3.0, info: '15GW · 562조원', from: 2030, policy: '국가첨단전략산업 특화단지(반도체) · 제11차 전력수급기본계획', src: '산업부·한전' },
+  { name: '평택 반도체', lat: 37.21, lon: 127.11, type: 'semi', region: 'sudogwon', size: 2.3, info: '삼성 평택캠퍼스', from: 2025, policy: '국가첨단전략산업 특화단지(반도체)', src: '산업부' },
+  { name: '구미 반도체 특화단지', lat: 36.12, lon: 128.34, type: 'semi', region: 'gyeongbuk', size: 1.6, info: '4.7조원', from: 2026, policy: '국가첨단전략산업 특화단지(반도체)', src: '산업부' },
+  { name: '천안·아산 디스플레이', lat: 36.82, lon: 127.15, type: 'disp', region: 'chungnam', size: 1.8, info: '17.2조원', from: 2025, policy: '국가첨단전략산업 특화단지(디스플레이)', src: '산업부' },
+  { name: '청주 이차전지 특화단지', lat: 36.64, lon: 127.49, type: 'batt', region: 'chungbuk', size: 1.6, info: '4.2조원', from: 2025, policy: '국가첨단전략산업 특화단지(이차전지)', src: '산업부' },
+  { name: '포항 이차전지 특화단지', lat: 36.02, lon: 129.34, type: 'batt', region: 'gyeongbuk', size: 2.0, info: '12.1조원', from: 2025, policy: '국가첨단전략산업 특화단지(이차전지)', src: '산업부' },
+  { name: '새만금 이차전지 특화단지', lat: 35.79, lon: 126.70, type: 'batt', region: 'jeonbuk', size: 1.8, info: '6.4조원', from: 2026, policy: '국가첨단전략산업 특화단지(이차전지)', src: '산업부' },
+  { name: '울산 이차전지·석유화학', lat: 35.50, lon: 129.30, type: 'batt', region: 'busanulsan', size: 2.0, info: '7.4조원', from: 2025, policy: '국가첨단전략산업 특화단지(이차전지)', src: '산업부' },
+  { name: '수도권 AI 데이터센터 집적', lat: 37.40, lon: 127.05, type: 'dc', region: 'sudogwon', size: 2.6, info: '전국 DC 약 70% 집중', from: 2025, policy: '데이터센터 전력수요 급증 · 분산에너지법', src: '산업부·한전' },
+  { name: '비수도권 분산 데이터센터', lat: 36.95, lon: 126.70, type: 'dc', region: 'chungnam', size: 1.4, info: '당진·충주·예천 등', from: 2027, policy: '분산에너지 활성화 특별법(2024)', src: '산업부' },
+  { name: '여수 국가산단(석유화학)', lat: 34.86, lon: 127.70, type: 'petro', region: 'jeonnam', size: 1.8, info: '대규모 상시 산업부하', from: 2025, policy: '국가산업단지', src: '-' },
+  { name: '광양 제철소', lat: 34.94, lon: 127.70, type: 'steel', region: 'jeonnam', size: 1.6, info: 'POSCO', from: 2025, policy: '국가산업단지', src: '-' },
+  { name: '대산 석유화학단지', lat: 37.00, lon: 126.36, type: 'petro', region: 'chungnam', size: 1.5, info: '서산 대산', from: 2025, policy: '국가산업단지', src: '-' },
+];
+
+export const DEMAND_STYLE = {
+  semi:  { color: '#818cf8', icon: '🔷', name: '반도체' },
+  batt:  { color: '#22c55e', icon: '🔋', name: '이차전지' },
+  disp:  { color: '#f472b6', icon: '🖼️', name: '디스플레이' },
+  dc:    { color: '#38bdf8', icon: '🖥️', name: '데이터센터' },
+  petro: { color: '#fb923c', icon: '🛢️', name: '석유화학' },
+  steel: { color: '#f87171', icon: '⚙️', name: '제철' },
+};

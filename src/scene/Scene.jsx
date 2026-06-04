@@ -13,6 +13,7 @@ import PlantsLayer from './PlantsLayer.jsx';
 import SubstationsLayer from './SubstationsLayer.jsx';
 import Transmission from './Transmission.jsx';
 import Highways from './Highways.jsx';
+import DemandLayer from './DemandLayer.jsx';
 import { TREES, pickModel } from './models.js';
 
 function RegionPads({ onSelect }) {
@@ -112,6 +113,7 @@ export default function Scene({ objects, plants = [], subs = [], sun, windFactor
         <Buildings objects={objects} sun={sun} windFactor={windFactor} />
         <PlantsLayer plants={plants} />
         <SubstationsLayer subs={subs} />
+        <DemandLayer year={year} />
         <Transmission year={year} />
         <Rain active={weather === 'rain'} />
         <ContactShadows position={[0, 0.04, 0]} opacity={0.28} scale={GROUND * 1.6} blur={2.2} far={20} />
