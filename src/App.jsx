@@ -180,7 +180,8 @@ function Legend() {
     ['#22d3ee', 'HVDC 에너지고속도로'],
     ['#c084fc', '765kV 교류 송전'],
     ['#b6a48a', '고속도로'],
-    ['#f59e0b', '변전소'],
+    ['#f59e0b', '기존 변전소(2025)'],
+    ['#ef4444', '신설 변전소(~2038)'],
   ];
   return (
     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px 10px', marginTop: 6 }}>
