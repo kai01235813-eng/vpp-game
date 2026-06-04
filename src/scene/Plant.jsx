@@ -1,12 +1,13 @@
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Html } from '@react-three/drei';
 import { PLANT_STYLE } from '../geo.js';
 
-// 소형 발전소 모델 (실제 좌표에 배치) — 종류별 형태
+// 소형 발전소 모델 — 라벨은 hover 시에만 표시(겹침 방지)
 export default function Plant({ source = 'other', label }) {
   const st = PLANT_STYLE[source] || PLANT_STYLE.other;
   const blade = useRef();
+  const [hover, setHover] = useState(false);
   useFrame((_, dt) => { if (blade.current) blade.current.rotation.z += dt * 1.6; });
 
   let body;
@@ -43,13 +44,14 @@ export default function Plant({ source = 'other', label }) {
   else body = <mesh position={[0, 0.14, 0]} castShadow><boxGeometry args={[0.36, 0.28, 0.3]} /><meshStandardMaterial color={st.color} /></mesh>;
 
   return (
-    <group>
-      {/* 종류 색 베이스 */}
+    <group onPointerOver={(e) => { e.stopPropagation(); setHover(true); }} onPointerOut={() => setHover(false)}>
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.05, 0]}><circleGeometry args={[0.42, 24]} /><meshStandardMaterial color={st.color} transparent opacity={0.5} /></mesh>
       {body}
-      <Html position={[0, 0.95, 0]} center distanceFactor={42} zIndexRange={[6, 0]}>
-        <div style={{ font: '700 11px "Fredoka","Noto Sans KR"', whiteSpace: 'nowrap', color: '#334155', background: 'rgba(255,255,255,0.85)', border: `1.5px solid ${st.color}`, borderRadius: 999, padding: '1px 7px', pointerEvents: 'none' }}>{st.icon} {label || st.name}</div>
-      </Html>
+      {hover && (
+        <Html position={[0, 1.0, 0]} center distanceFactor={40} zIndexRange={[8, 0]}>
+          <div style={{ font: '700 12px "Fredoka","Noto Sans KR"', whiteSpace: 'nowrap', color: '#334155', background: 'rgba(255,255,255,0.95)', border: `2px solid ${st.color}`, borderRadius: 999, padding: '2px 9px', pointerEvents: 'none', boxShadow: '0 6px 14px rgba(120,150,190,0.3)' }}>{st.icon} {label || st.name}</div>
+        </Html>
+      )}
     </group>
   );
 }
