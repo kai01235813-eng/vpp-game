@@ -48,7 +48,7 @@ export default function App() {
   }, []);
   const bannerTimer = useRef(null);
   const yearRef = useRef(year);
-  const prevYear = useRef(year);
+  const prevYear = useRef(START_YEAR - 1);
   yearRef.current = year;
 
   const yearKey = Math.round(year * 10);
