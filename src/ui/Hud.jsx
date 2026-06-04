@@ -48,8 +48,8 @@ export default function Hud({ ui, banner, stats, year, playing, onYear, onToggle
   return (
     <>
       <div className="absolute top-3 left-1/2 -translate-x-1/2 z-30 glass rounded-3xl flex items-center"
-        style={{ gap: mobile ? 8 : 16, padding: mobile ? '6px 12px' : '8px 20px' }}>
-        <div className="font-round" style={{ fontSize: mobile ? 13 : 15, color: '#334155' }}>⚡ 대한민국 전력계통</div>
+        style={{ gap: mobile ? 8 : 16, padding: mobile ? '6px 12px' : '8px 20px', whiteSpace: 'nowrap', maxWidth: '96vw' }}>
+        <div className="font-round" style={{ fontSize: mobile ? 12 : 15, color: '#334155', whiteSpace: 'nowrap' }}>⚡ 대한민국 전력계통</div>
         {!mobile && (
           <div style={{ fontSize: 11, color: '#64748b', borderLeft: '1px solid rgba(148,163,184,0.4)', paddingLeft: 12, lineHeight: 1.2 }}>
             <b style={{ color: '#0ea5e9' }}>제11차 전력수급기본계획</b> 기반 실제 데이터 시뮬레이션
