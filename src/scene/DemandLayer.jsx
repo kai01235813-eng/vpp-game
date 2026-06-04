@@ -3,6 +3,17 @@ import * as THREE from 'three';
 import { Html } from '@react-three/drei';
 import { DEMAND_HUBS, DEMAND_STYLE, toWorld } from '../geo.js';
 
+// 전력수요 규모(size) → 히트 색상 (노랑→주황→빨강)
+function heat(size) {
+  const t = Math.max(0, Math.min(1, (size - 1.3) / (3.0 - 1.3)));
+  const c1 = [253, 224, 71], c2 = [249, 115, 22], c3 = [185, 28, 28];
+  let a, b, tt;
+  if (t < 0.5) { a = c1; b = c2; tt = t / 0.5; } else { a = c2; b = c3; tt = (t - 0.5) / 0.5; }
+  const m = (i) => Math.round(a[i] + (b[i] - a[i]) * tt);
+  return `rgb(${m(0)},${m(1)},${m(2)})`;
+}
+function sizeLabel(size) { return size >= 2.6 ? '초대형' : size >= 2.0 ? '대형' : size >= 1.6 ? '중대형' : '중형'; }
+
 function useGlowTexture() {
   return useMemo(() => {
     const c = document.createElement('canvas');
@@ -21,27 +32,29 @@ function Hub({ h, tex }) {
   const [hover, setHover] = useState(false);
   const [x, z] = toWorld(h.lat, h.lon);
   const st = DEMAND_STYLE[h.type] || DEMAND_STYLE.semi;
-  const r = 1.5 * h.size;
+  const col = heat(h.size);              // 색 = 전력수요 규모
+  const r = 1.4 * h.size;                // 크기 = 전력수요 규모
+  const op = 0.5 + Math.min(0.28, (h.size - 1.3) * 0.18);
   return (
     <group position={[x, 0, z]} onPointerOver={(e) => { e.stopPropagation(); setHover(true); }} onPointerOut={() => setHover(false)}>
-      {/* 전력수요 글로우 (진하게) */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.07, 0]}>
         <planeGeometry args={[r * 2, r * 2]} />
-        <meshBasicMaterial map={tex} color={st.color} transparent opacity={0.62} depthWrite={false} />
+        <meshBasicMaterial map={tex} color={col} transparent opacity={op} depthWrite={false} />
       </mesh>
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.08, 0]}>
-        <planeGeometry args={[r * 1.1, r * 1.1]} />
-        <meshBasicMaterial map={tex} color={st.color} transparent opacity={0.55} depthWrite={false} />
+        <planeGeometry args={[r * 1.05, r * 1.05]} />
+        <meshBasicMaterial map={tex} color={col} transparent opacity={op * 0.9} depthWrite={false} />
       </mesh>
       <mesh position={[0, 0.2, 0]}>
-        <sphereGeometry args={[0.17, 12, 12]} />
-        <meshStandardMaterial color={st.color} emissive={st.color} emissiveIntensity={0.9} />
+        <sphereGeometry args={[0.16, 12, 12]} />
+        <meshStandardMaterial color={col} emissive={col} emissiveIntensity={0.9} />
       </mesh>
       {hover && (
         <Html position={[0, 1.0, 0]} center distanceFactor={42} zIndexRange={[8, 0]}>
-          <div style={{ font: '700 12px "Fredoka","Noto Sans KR"', whiteSpace: 'nowrap', color: '#334155', background: 'rgba(255,255,255,0.95)', border: `2px solid ${st.color}`, borderRadius: 12, padding: '3px 10px', pointerEvents: 'none', boxShadow: '0 6px 14px rgba(120,150,190,0.3)' }}>
+          <div style={{ font: '700 12px "Fredoka","Noto Sans KR"', whiteSpace: 'nowrap', color: '#334155', background: 'rgba(255,255,255,0.96)', border: `2px solid ${col}`, borderRadius: 12, padding: '3px 10px', pointerEvents: 'none', boxShadow: '0 6px 14px rgba(120,150,190,0.3)' }}>
+            <span style={{ background: col, color: '#fff', borderRadius: 6, padding: '0 5px', fontSize: 10, marginRight: 4 }}>{sizeLabel(h.size)} 수요</span>
             {st.icon} {h.name} <b style={{ color: st.color }}>{h.info}</b>
-            <div style={{ fontSize: 9.5, color: '#94a3b8', fontWeight: 400 }}>{h.policy}</div>
+            <div style={{ fontSize: 9.5, color: '#94a3b8', fontWeight: 400 }}>{st.name} · {h.policy}</div>
           </div>
         </Html>
       )}

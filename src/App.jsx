@@ -251,7 +251,12 @@ function NationalBody({ year, stats }) {
       <div style={{ marginTop: 8, paddingTop: 8, borderTop: '1px solid rgba(148,163,184,0.25)' }}>
         <div style={{ fontSize: 10, color: '#94a3b8', fontWeight: 700 }}>범례</div>
         <Legend />
-        <div style={{ fontSize: 9.5, color: '#64748b', marginTop: 6, lineHeight: 1.4 }}>🔆 반투명 글로우 = 정책 기반 <b>전력수요 거점</b>(반도체·이차전지·디스플레이·데이터센터·석유화학·제철). 국가첨단전략산업 특화단지(2023, 614조원)·데이터센터 정책 반영.</div>
+        <div style={{ fontSize: 9.5, color: '#64748b', marginTop: 6, lineHeight: 1.4 }}>🔆 <b>전력수요 거점</b> — 글로우 <b>크기·색</b>이 상대 전력수요 규모(작음→큼). 산업종류는 마우스오버로 확인. 국가첨단전략산업 특화단지(2023, 614조원)·데이터센터 정책 기반.</div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 4 }}>
+          <span style={{ fontSize: 9, color: '#94a3b8' }}>수요 적음</span>
+          <div style={{ flex: 1, height: 7, borderRadius: 99, background: 'linear-gradient(90deg,#fde047,#f97316,#b91c1c)' }} />
+          <span style={{ fontSize: 9, color: '#94a3b8' }}>많음</span>
+        </div>
         <div style={{ fontSize: 9.5, color: '#94a3b8', marginTop: 6, lineHeight: 1.4 }}>출처: 제11차 전력수급기본계획·송변전설비계획, 제5차 국토종합계획, 제2차 국가도로망종합계획, 산업부 수소특화단지·분산에너지, 한전</div>
       </div>
     </div>
