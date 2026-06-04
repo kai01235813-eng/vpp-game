@@ -7,6 +7,7 @@ import { TYPE_INFO, regionById, REGIONS } from './regions.js';
 import { visibleAt, statsAt, MILESTONES, PHASES, phaseAt, uStage, START_YEAR, END_YEAR } from './buildout.js';
 import { FALLBACK_PLANTS, PLANT_STYLE, MAJOR_SUBS, provinceOf, REGION_POLICY } from './geo.js';
 import { visibleSubsAt } from './substations.js';
+import { useIsMobile, MobilePanel } from './useUI.jsx';
 
 function snapshot(s) {
   return {
@@ -112,12 +113,15 @@ export default function App() {
 }
 
 function RegionCard({ regionId, plants, subs, onClose }) {
+  const mobile = useIsMobile();
   const region = regionById(regionId);
   const here = plants.filter((p) => p.region === regionId);
   const subCount = subs.filter((s) => s.region === regionId).length;
   const majors = MAJOR_SUBS[regionId] || [];
   return (
-    <div className="glass pop" style={{ position: 'absolute', left: 10, bottom: 14, zIndex: 31, width: 250, borderRadius: 18, padding: 14 }}>
+    <div className="glass pop" style={mobile
+      ? { position: 'fixed', left: 8, right: 8, bottom: 8, zIndex: 31, maxHeight: '60vh', overflowY: 'auto', borderRadius: 18, padding: 14 }
+      : { position: 'absolute', left: 10, bottom: 14, zIndex: 31, width: 250, borderRadius: 18, padding: 14 }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
         <span className="font-round" style={{ fontSize: 16, color: '#334155', borderBottom: `3px solid ${region.tint}` }}>{region.name}</span>
         <button onClick={onClose} style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: '#94a3b8', fontSize: 18 }}>✕</button>
@@ -189,12 +193,12 @@ function Legend() {
   );
 }
 
-function NationalPanel({ year, stats }) {
+function NationalBody({ year, stats }) {
   const ph = phaseAt(year);
   const u = uStage(year);
   const recent = MILESTONES.filter((m) => m.year <= Math.floor(year) && m.year > year - 3).slice(-3);
   return (
-    <div className="glass" style={{ position: 'absolute', right: 10, top: 64, zIndex: 20, width: 300, maxWidth: '46vw', maxHeight: 'calc(100vh - 200px)', overflowY: 'auto', borderRadius: 18, padding: 14 }}>
+    <div className="glass" style={{ borderRadius: 18, padding: 14 }}>
       <div style={{ fontSize: 11, color: '#94a3b8' }}>📋 국가 전력정책 안내판 · {Math.floor(year)}년</div>
       <div className="font-round" style={{ fontSize: 17, color: '#0ea5e9', margin: '2px 0 2px' }}>{ph.name}</div>
       <div style={{ fontSize: 12, color: '#5b6b7d', lineHeight: 1.4 }}>{ph.desc}</div>
@@ -234,6 +238,16 @@ function NationalPanel({ year, stats }) {
         <Legend />
         <div style={{ fontSize: 9.5, color: '#94a3b8', marginTop: 6, lineHeight: 1.4 }}>출처: 제11차 전력수급기본계획·송변전설비계획, 제5차 국토종합계획, 제2차 국가도로망종합계획, 산업부 수소특화단지·분산에너지, 한전</div>
       </div>
+    </div>
+  );
+}
+
+function NationalPanel({ year, stats }) {
+  const mobile = useIsMobile();
+  if (mobile) return <MobilePanel chip="📋 정책" side="right"><NationalBody year={year} stats={stats} /></MobilePanel>;
+  return (
+    <div style={{ position: 'absolute', right: 10, top: 64, zIndex: 20, width: 300, maxWidth: '46vw', maxHeight: 'calc(100vh - 200px)', overflowY: 'auto' }}>
+      <NationalBody year={year} stats={stats} />
     </div>
   );
 }
