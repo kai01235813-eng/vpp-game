@@ -5,7 +5,7 @@ import Intro from './ui/Intro.jsx';
 import { initialState, step, triggerEvent, coach, TICK_MS } from './sim.js';
 import { TYPE_INFO, regionById, REGIONS } from './regions.js';
 import { visibleAt, statsAt, MILESTONES, PHASES, phaseAt, uStage, START_YEAR, END_YEAR } from './buildout.js';
-import { FALLBACK_PLANTS, PLANT_STYLE, MAJOR_SUBS, provinceOf, REGION_POLICY, DEMAND_HUBS, DEMAND_STYLE } from './geo.js';
+import { FALLBACK_PLANTS, PLANT_STYLE, MAJOR_SUBS, provinceOf, REGION_POLICY, DEMAND_HUBS, DEMAND_STYLE, TRANSMISSION } from './geo.js';
 import { visibleSubsAt } from './substations.js';
 import { useIsMobile, MobilePanel } from './useUI.jsx';
 import { GuideModal } from './ui/Guide.jsx';
@@ -21,6 +21,12 @@ function snapshot(s) {
   };
 }
 
+const TIMELINE_EVENTS = [
+  ...MILESTONES.map((m) => ({ year: m.year, text: `📅 ${m.year} ${m.text}`, color: '#fbbf24' })),
+  ...DEMAND_HUBS.map((h) => ({ year: h.from || 2025, text: `🔆 ${h.name} 전력수요 본격화 · ${h.info}`, color: '#f97316' })),
+  ...TRANSMISSION.filter((l) => (l.from || 2025) > 2025).map((l) => ({ year: l.from, text: `🔌 ${l.name} 준공`, color: '#22d3ee' })),
+].sort((a, b) => a.year - b.year);
+
 const YEAR_STEP = 0.06; // 틱당 진행 (≈65초에 2025→2038)
 
 export default function App() {
@@ -32,6 +38,14 @@ export default function App() {
   const [banner, setBanner] = useState(null);
   const [selRegion, setSelRegion] = useState(null);
   const [showGuide, setShowGuide] = useState(false);
+  const mobile = useIsMobile();
+  const [feed, setFeed] = useState([]);
+  const feedId = useRef(0);
+  const addFeed = useCallback((text, color) => {
+    const id = feedId.current++;
+    setFeed((f) => [...f.slice(-5), { id, text, color }]);
+    setTimeout(() => setFeed((f) => f.filter((x) => x.id !== id)), 6500);
+  }, []);
   const bannerTimer = useRef(null);
   const yearRef = useRef(year);
   const prevYear = useRef(year);
@@ -105,6 +119,7 @@ export default function App() {
           onYear={(y) => { setYear(y); setPlaying(false); }}
           onTogglePlay={() => setPlaying((p) => !p)} />
       )}
+      {started && <FeedView items={feed} mobile={mobile} />}
       {started && <NationalPanel year={year} stats={stats} />}
       {started && selRegion && (
         <RegionCard regionId={selRegion} plants={FALLBACK_PLANTS} subs={visibleSubs} onClose={() => setSelRegion(null)} />
@@ -272,6 +287,17 @@ function NationalPanel({ year, stats }) {
   return (
     <div style={{ position: 'absolute', right: 10, top: 64, zIndex: 20, width: 300, maxWidth: '46vw', maxHeight: 'calc(100vh - 200px)', overflowY: 'auto' }}>
       <NationalBody year={year} stats={stats} />
+    </div>
+  );
+}
+
+function FeedView({ items, mobile }) {
+  if (!items.length) return null;
+  return (
+    <div style={{ position: 'absolute', bottom: mobile ? 86 : 98, left: '50%', transform: 'translateX(-50%)', zIndex: 19, width: mobile ? '92vw' : 'min(520px, 90vw)', display: 'flex', flexDirection: 'column', gap: 4, alignItems: 'center', pointerEvents: 'none' }}>
+      {items.map((it) => (
+        <div key={it.id} className="feeditem font-round" style={{ background: 'rgba(255,255,255,0.82)', border: `1.5px solid ${it.color}`, color: '#334155', borderRadius: 999, padding: '3px 12px', fontSize: mobile ? 11 : 12, fontWeight: 600, whiteSpace: 'nowrap', maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis', boxShadow: '0 4px 10px rgba(120,150,190,0.18)' }}>{it.text}</div>
+      ))}
     </div>
   );
 }
