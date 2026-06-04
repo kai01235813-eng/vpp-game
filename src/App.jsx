@@ -307,9 +307,9 @@ function NationalPanel({ year, stats }) {
 function FeedView({ items, mobile, playing, onDone, onSelect }) {
   if (!items.length) return null;
   return (
-    <div style={{ position: 'absolute', bottom: mobile ? 86 : 98, left: '50%', transform: 'translateX(-50%)', zIndex: 19, width: mobile ? '92vw' : 'min(520px, 90vw)', display: 'flex', flexDirection: 'column', gap: 4, alignItems: 'center', pointerEvents: 'none' }}>
+    <div style={{ position: 'absolute', bottom: mobile ? 150 : 170, left: '50%', transform: 'translateX(-50%)', zIndex: 19, width: mobile ? '92vw' : 'min(520px, 90vw)', display: 'flex', flexDirection: 'column', gap: 4, alignItems: 'center', pointerEvents: 'none' }}>
       {items.map((it) => (
-        <div key={it.id} className="feeditem font-round" onAnimationEnd={() => onDone && onDone(it.id)} onClick={() => onSelect && onSelect(it)} title="출처·근거 보기" style={{ cursor: 'pointer', pointerEvents: 'auto', animationPlayState: playing ? 'running' : 'paused', background: 'rgba(255,255,255,0.88)', border: `1.5px solid ${it.color}`, color: '#334155', borderRadius: 999, padding: '3px 12px', fontSize: mobile ? 11 : 12, fontWeight: 600, whiteSpace: 'nowrap', maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis', boxShadow: '0 4px 10px rgba(120,150,190,0.18)' }}>{it.text}</div>
+        <div key={it.id} className="feeditem font-round" onAnimationEnd={() => onDone && onDone(it.id)} onClick={() => onSelect && onSelect(it)} title="출처·근거 보기" style={{ cursor: 'pointer', pointerEvents: 'auto', animationPlayState: playing ? 'running' : 'paused', background: 'rgba(255,255,255,0.6)', border: `1px solid ${it.color}`, color: '#475569', borderRadius: 999, padding: '3px 11px', fontSize: mobile ? 10.5 : 11.5, fontWeight: 600, whiteSpace: 'nowrap', maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis', boxShadow: '0 2px 6px rgba(120,150,190,0.12)' }}>{it.text}</div>
       ))}
     </div>
   );
