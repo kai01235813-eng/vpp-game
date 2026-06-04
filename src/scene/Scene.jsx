@@ -109,7 +109,6 @@ export default function Scene({ objects, plants = [], subs = [], sun, windFactor
         <Korea />
         <Highways />
         <RegionPads onSelect={onSelectRegion} />
-        <Decor />
         <Buildings objects={objects} sun={sun} windFactor={windFactor} />
         <PlantsLayer plants={plants} />
         <SubstationsLayer subs={subs} />
