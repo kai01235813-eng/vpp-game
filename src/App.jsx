@@ -9,6 +9,7 @@ import { FALLBACK_PLANTS, PLANT_STYLE, MAJOR_SUBS, provinceOf, REGION_POLICY, DE
 import { visibleSubsAt } from './substations.js';
 import { useIsMobile, MobilePanel } from './useUI.jsx';
 import { GuideModal } from './ui/Guide.jsx';
+import { QuizModal } from './ui/Quiz.jsx';
 
 function snapshot(s) {
   return {
@@ -40,6 +41,7 @@ export default function App() {
   const [selRegion, setSelRegion] = useState(null);
   const [showGuide, setShowGuide] = useState(false);
   const [feedDetail, setFeedDetail] = useState(null);
+  const [showQuiz, setShowQuiz] = useState(false);
   const mobile = useIsMobile();
   const [feed, setFeed] = useState([]);
   const feedId = useRef(0);
@@ -63,15 +65,47 @@ export default function App() {
   const stats = statsAt(year);
 
   const onCapture = useCallback(() => {
-    const c = document.querySelector('canvas');
-    if (!c) return;
-    try { const a = document.createElement('a'); a.href = c.toDataURL('image/png'); a.download = `대한민국전력계통_${Math.floor(year)}년.png`; a.click(); } catch (e) {}
-  }, [year]);
+    const src = document.querySelector('canvas');
+    if (!src) return;
+    const W = 1200, H = 675;
+    const cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+    const g = cv.getContext('2d');
+    const cover = (img, dx, dy, dw, dh) => {
+      const ir = img.width / img.height, dr = dw / dh; let sw, sh, sx, sy;
+      if (ir > dr) { sh = img.height; sw = sh * dr; sx = (img.width - sw) / 2; sy = 0; } else { sw = img.width; sh = sw / dr; sx = 0; sy = (img.height - sh) / 2; }
+      g.drawImage(img, sx, sy, sw, sh, dx, dy, dw, dh);
+    };
+    const rr = (x, y, w, h, r) => { g.beginPath(); g.moveTo(x + r, y); g.arcTo(x + w, y, x + w, y + h, r); g.arcTo(x + w, y + h, x, y + h, r); g.arcTo(x, y + h, x, y, r); g.arcTo(x, y, x + w, y, r); g.closePath(); };
+    try { cover(src, 0, 0, W, H); } catch (e) { g.fillStyle = '#eaf6ff'; g.fillRect(0, 0, W, H); }
+    // 상단 그라데이션 + 제목
+    let tg = g.createLinearGradient(0, 0, 0, 130); tg.addColorStop(0, 'rgba(255,255,255,0.92)'); tg.addColorStop(1, 'rgba(255,255,255,0)'); g.fillStyle = tg; g.fillRect(0, 0, W, 130);
+    g.textBaseline = 'alphabetic'; g.fillStyle = '#0ea5e9'; g.font = 'bold 32px "Noto Sans KR", sans-serif'; g.fillText('⚡ 대한민국 전력계통 시뮬레이터', 30, 48);
+    g.fillStyle = '#475569'; g.font = '16px "Noto Sans KR", sans-serif'; g.fillText('제11차 전력수급기본계획 기반 실제 데이터', 30, 74);
+    g.textAlign = 'right'; g.fillStyle = '#0ea5e9'; g.font = 'bold 50px "Noto Sans KR", sans-serif'; g.fillText(Math.floor(year) + '년', W - 30, 60); g.textAlign = 'left';
+    // 하단 그라데이션 + 스탯 칩
+    let bg = g.createLinearGradient(0, H - 180, 0, H); bg.addColorStop(0, 'rgba(255,255,255,0)'); bg.addColorStop(1, 'rgba(255,255,255,0.95)'); g.fillStyle = bg; g.fillRect(0, H - 180, W, 180);
+    const chips = [['신재생', stats.renewGW.toFixed(0) + 'GW', '#34d399'], ['원전비중', stats.nuclearShare.toFixed(1) + '%', '#2dd4bf'], ['최대수요', stats.demandGW.toFixed(0) + 'GW', '#fb7185'], ['변전소', stats.substations.toLocaleString() + '개', '#f59e0b']];
+    const cw = 270, gap = 18, total = chips.length * cw + (chips.length - 1) * gap, x0 = (W - total) / 2, cy = H - 110;
+    chips.forEach((ch, i) => {
+      const x = x0 + i * (cw + gap);
+      g.fillStyle = 'rgba(255,255,255,0.9)'; rr(x, cy, cw, 70, 16); g.fill();
+      g.fillStyle = '#94a3b8'; g.font = '15px "Noto Sans KR", sans-serif'; g.textAlign = 'center'; g.fillText(ch[0], x + cw / 2, cy + 26);
+      g.fillStyle = ch[2]; g.font = 'bold 28px "Noto Sans KR", sans-serif'; g.fillText(ch[1], x + cw / 2, cy + 56); g.textAlign = 'left';
+    });
+    g.fillStyle = '#64748b'; g.font = '15px "Noto Sans KR", sans-serif'; g.textAlign = 'center'; g.fillText('2025 → 2038 · 산업부·한전 공식 계획 기반', W / 2, H - 20); g.textAlign = 'left';
+    try { const a = document.createElement('a'); a.href = cv.toDataURL('image/png'); a.download = `대한민국전력계통_${Math.floor(year)}년.png`; a.click(); } catch (e) {}
+  }, [year, stats]);
   const onShare = useCallback(() => {
     const url = `${window.location.origin}${window.location.pathname}?year=${Math.floor(year)}`;
     try { navigator.clipboard.writeText(url); } catch (e) {}
     showBannerRef.current && showBannerRef.current(`🔗 ${Math.floor(year)}년 링크 복사됨`);
   }, [year]);
+  const onQuizShare = useCallback((score, total) => {
+    const url = `${window.location.origin}${window.location.pathname}`;
+    const text = `대한민국 전력계통 시뮬레이터 예측 퀴즈 ${score}/${total}점! ⚡ 제11차 전력수급기본계획 기반 — ${url}`;
+    try { navigator.clipboard.writeText(text); } catch (e) {}
+    showBannerRef.current && showBannerRef.current(`🔗 결과 복사됨: ${score}/${total}점`);
+  }, []);
   const showBannerRef = useRef(null);
   const showBanner = useCallback((msg, ms = 3600) => {
     setBanner(msg);
@@ -126,7 +160,7 @@ export default function App() {
       <Scene objects={visible} plants={FALLBACK_PLANTS} subs={visibleSubs} sun={ui.sun} windFactor={ui.windFactor}
         hour={ui.hour} year={year} onSelectRegion={setSelRegion} />
       {started && (
-        <Hud ui={ui} banner={banner} stats={stats} onHelp={() => setShowGuide(true)} onCapture={onCapture} onShare={onShare}
+        <Hud ui={ui} banner={banner} stats={stats} onHelp={() => setShowGuide(true)} onCapture={onCapture} onShare={onShare} onQuiz={() => setShowQuiz(true)}
           year={year} playing={playing}
           onYear={(y) => { setYear(y); setPlaying(false); }}
           onTogglePlay={() => setPlaying((p) => !p)} />
@@ -138,6 +172,7 @@ export default function App() {
         <RegionCard regionId={selRegion} plants={FALLBACK_PLANTS} subs={visibleSubs} onClose={() => setSelRegion(null)} />
       )}
       {started && showGuide && <GuideModal onClose={() => setShowGuide(false)} />}
+      {started && showQuiz && <QuizModal onClose={() => setShowQuiz(false)} onShare={onQuizShare} />}
       {!started && <Intro onStart={() => setStarted(true)} />}
     </div>
   );

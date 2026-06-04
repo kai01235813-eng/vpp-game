@@ -51,7 +51,7 @@ function StatsCard({ stats, year }) {
   );
 }
 
-export default function Hud({ ui, banner, stats, year, playing, onYear, onTogglePlay, onHelp, onCapture, onShare }) {
+export default function Hud({ ui, banner, stats, year, playing, onYear, onTogglePlay, onHelp, onCapture, onShare, onQuiz }) {
   const mobile = useIsMobile();
   return (
     <>
@@ -64,6 +64,7 @@ export default function Hud({ ui, banner, stats, year, playing, onYear, onToggle
           </div>
         )}
         {mobile && <span className="font-round" style={{ fontSize: 14, color: '#0ea5e9' }}>{Math.floor(year)}</span>}
+        <button onClick={onQuiz} title="예측 퀴즈" style={{ border: 'none', cursor: 'pointer', borderRadius: 999, width: 26, height: 26, background: 'rgba(52,211,153,0.18)', fontSize: 14 }}>🎯</button>
         <button onClick={onHelp} title="읽는 법" style={{ border: 'none', cursor: 'pointer', borderRadius: 999, width: 26, height: 26, background: 'rgba(56,189,248,0.15)', color: '#0ea5e9', fontWeight: 700, fontSize: 14 }}>?</button>
       </div>
 
