@@ -111,7 +111,7 @@ export default function App() {
   return (
     <div className="fixed inset-0">
       <Scene objects={visible} plants={FALLBACK_PLANTS} subs={visibleSubs} sun={ui.sun} windFactor={ui.windFactor}
-        hour={ui.hour} weather={ui.weather} year={year} onSelectRegion={setSelRegion} />
+        hour={ui.hour} year={year} onSelectRegion={setSelRegion} />
       {started && (
         <Hud ui={ui} banner={banner} stats={stats} onHelp={() => setShowGuide(true)}
           year={year} playing={playing}

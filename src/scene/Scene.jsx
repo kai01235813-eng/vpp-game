@@ -8,7 +8,6 @@ import KenneyModel from './KenneyModel.jsx';
 import Korea from './Korea.jsx';
 import World from './World.jsx';
 import DayNight from './DayNight.jsx';
-import Rain from './Rain.jsx';
 import PlantsLayer from './PlantsLayer.jsx';
 import SubstationsLayer from './SubstationsLayer.jsx';
 import Transmission from './Transmission.jsx';
@@ -87,7 +86,7 @@ function Decor() {
   );
 }
 
-export default function Scene({ objects, plants = [], subs = [], sun, windFactor, hour = 12, weather = 'clear', year = 2025, onSelectRegion }) {
+export default function Scene({ objects, plants = [], subs = [], sun, windFactor, hour = 12, year = 2025, onSelectRegion }) {
   return (
     <Canvas
       shadows
@@ -114,7 +113,6 @@ export default function Scene({ objects, plants = [], subs = [], sun, windFactor
         <SubstationsLayer subs={subs} year={year} />
         <DemandLayer year={year} />
         <Transmission year={year} />
-        <Rain active={weather === 'rain'} />
         <ContactShadows position={[0, 0.04, 0]} opacity={0.28} scale={GROUND * 1.6} blur={2.2} far={20} />
       </Suspense>
 

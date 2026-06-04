@@ -103,11 +103,7 @@ export function step(s) {
   s.hour = s.time / 60;
 
   // 날씨 전환
-  if (--s.weatherTimer <= 0) {
-    s.weather = WEATHER_PICK[Math.floor(Math.random() * WEATHER_PICK.length)];
-    s.weatherTimer = 50 + Math.floor(Math.random() * 60);
-  }
-  const wx = WEATHER[s.weather];
+  const wx = WEATHER.clear;
 
   // 이벤트 만료
   if (s.event) { if (--s.event.ticksLeft <= 0) s.event = null; }

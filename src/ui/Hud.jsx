@@ -1,4 +1,3 @@
-import { WEATHER } from '../sim.js';
 import { PLAN, START_YEAR, END_YEAR } from '../buildout.js';
 import { useIsMobile, MobilePanel } from '../useUI.jsx';
 
@@ -55,9 +54,6 @@ export default function Hud({ ui, banner, stats, year, playing, onYear, onToggle
             <b style={{ color: '#0ea5e9' }}>제11차 전력수급기본계획</b> 기반 실제 데이터 시뮬레이션
           </div>
         )}
-        <div className="flex items-center gap-1 rounded-full px-2.5 py-1" style={{ background: 'rgba(255,255,255,0.7)', border: '1.5px solid rgba(148,163,184,0.3)' }}>
-          <span>{WEATHER[ui.weather].icon}</span>{!mobile && <span className="font-round" style={{ color: '#64748b', fontSize: 12 }}>{WEATHER[ui.weather].name}</span>}
-        </div>
         {mobile && <span className="font-round" style={{ fontSize: 14, color: '#0ea5e9' }}>{Math.floor(year)}</span>}
         <button onClick={onHelp} title="읽는 법" style={{ border: 'none', cursor: 'pointer', borderRadius: 999, width: 26, height: 26, background: 'rgba(56,189,248,0.15)', color: '#0ea5e9', fontWeight: 700, fontSize: 14 }}>?</button>
       </div>
