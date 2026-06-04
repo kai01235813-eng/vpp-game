@@ -43,9 +43,9 @@ export default function App() {
   const feedId = useRef(0);
   const addFeed = useCallback((text, color) => {
     const id = feedId.current++;
-    setFeed((f) => [...f.slice(-5), { id, text, color }]);
-    setTimeout(() => setFeed((f) => f.filter((x) => x.id !== id)), 6500);
+    setFeed((f) => [...f.slice(-6), { id, text, color }]);
   }, []);
+  const removeFeed = useCallback((id) => setFeed((f) => f.filter((x) => x.id !== id)), []);
   const bannerTimer = useRef(null);
   const yearRef = useRef(year);
   const prevYear = useRef(START_YEAR - 1);
@@ -117,7 +117,7 @@ export default function App() {
           onYear={(y) => { setYear(y); setPlaying(false); }}
           onTogglePlay={() => setPlaying((p) => !p)} />
       )}
-      {started && <FeedView items={feed} mobile={mobile} />}
+      {started && <FeedView items={feed} mobile={mobile} playing={playing} onDone={removeFeed} />}
       {started && <NationalPanel year={year} stats={stats} />}
       {started && selRegion && (
         <RegionCard regionId={selRegion} plants={FALLBACK_PLANTS} subs={visibleSubs} onClose={() => setSelRegion(null)} />
@@ -289,12 +289,12 @@ function NationalPanel({ year, stats }) {
   );
 }
 
-function FeedView({ items, mobile }) {
+function FeedView({ items, mobile, playing, onDone }) {
   if (!items.length) return null;
   return (
     <div style={{ position: 'absolute', bottom: mobile ? 86 : 98, left: '50%', transform: 'translateX(-50%)', zIndex: 19, width: mobile ? '92vw' : 'min(520px, 90vw)', display: 'flex', flexDirection: 'column', gap: 4, alignItems: 'center', pointerEvents: 'none' }}>
       {items.map((it) => (
-        <div key={it.id} className="feeditem font-round" style={{ background: 'rgba(255,255,255,0.82)', border: `1.5px solid ${it.color}`, color: '#334155', borderRadius: 999, padding: '3px 12px', fontSize: mobile ? 11 : 12, fontWeight: 600, whiteSpace: 'nowrap', maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis', boxShadow: '0 4px 10px rgba(120,150,190,0.18)' }}>{it.text}</div>
+        <div key={it.id} className="feeditem font-round" onAnimationEnd={() => onDone && onDone(it.id)} style={{ animationPlayState: playing ? 'running' : 'paused', background: 'rgba(255,255,255,0.82)', border: `1.5px solid ${it.color}`, color: '#334155', borderRadius: 999, padding: '3px 12px', fontSize: mobile ? 11 : 12, fontWeight: 600, whiteSpace: 'nowrap', maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis', boxShadow: '0 4px 10px rgba(120,150,190,0.18)' }}>{it.text}</div>
       ))}
     </div>
   );
