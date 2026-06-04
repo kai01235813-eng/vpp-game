@@ -8,6 +8,7 @@ import { visibleAt, statsAt, MILESTONES, PHASES, phaseAt, uStage, START_YEAR, EN
 import { FALLBACK_PLANTS, PLANT_STYLE, MAJOR_SUBS, provinceOf, REGION_POLICY, DEMAND_HUBS, DEMAND_STYLE } from './geo.js';
 import { visibleSubsAt } from './substations.js';
 import { useIsMobile, MobilePanel } from './useUI.jsx';
+import { GuideModal } from './ui/Guide.jsx';
 
 function snapshot(s) {
   return {
@@ -30,6 +31,7 @@ export default function App() {
   const [ui, setUi] = useState(() => snapshot(sim.current));
   const [banner, setBanner] = useState(null);
   const [selRegion, setSelRegion] = useState(null);
+  const [showGuide, setShowGuide] = useState(false);
   const bannerTimer = useRef(null);
   const yearRef = useRef(year);
   const prevYear = useRef(year);
@@ -98,7 +100,7 @@ export default function App() {
       <Scene objects={visible} plants={FALLBACK_PLANTS} subs={visibleSubs} sun={ui.sun} windFactor={ui.windFactor}
         hour={ui.hour} weather={ui.weather} year={year} onSelectRegion={setSelRegion} />
       {started && (
-        <Hud ui={ui} banner={banner} stats={stats}
+        <Hud ui={ui} banner={banner} stats={stats} onHelp={() => setShowGuide(true)}
           year={year} playing={playing}
           onYear={(y) => { setYear(y); setPlaying(false); }}
           onTogglePlay={() => setPlaying((p) => !p)} />
@@ -107,6 +109,7 @@ export default function App() {
       {started && selRegion && (
         <RegionCard regionId={selRegion} plants={FALLBACK_PLANTS} subs={visibleSubs} onClose={() => setSelRegion(null)} />
       )}
+      {started && showGuide && <GuideModal onClose={() => setShowGuide(false)} />}
       {!started && <Intro onStart={() => setStarted(true)} />}
     </div>
   );

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { GuideContent } from './Guide.jsx';
 
 const SLIDES = [
   { h: '제11차 전력수급기본계획 시뮬레이터', icon: '🇰🇷 ⚡ 2025 → 2038',
@@ -8,7 +9,8 @@ const SLIDES = [
   { h: 'U자형 연안축으로 잇는 대한민국', icon: '🇰🇷 U',
     body: '경부축(서울–부산) 중심에서 벗어나 서·남·동해안을 잇는 U자형 연안축이 국가 골격이 되고 있습니다. 제5차 국토종합계획(2020~2040)의 연안 성장축, 제2차 국가도로망종합계획(2021~2030)의 환황해·환동해축, 그리고 U자형 한반도 에너지고속도로(HVDC, 2030~2040년대)가 한 방향을 가리킵니다 — 해안의 재생에너지를 수도권·산업으로.' },
   { h: '조작 방법', icon: '🎬',
-    body: '하단 타임라인이 자동 재생되며 2025→2038로 진행됩니다. 슬라이더를 드래그하면 원하는 연도로 이동, 지역 이름표를 클릭하면 그 시도의 발전소·변전소·미래정책 브리핑을 볼 수 있어요. 우측 하단에는 지역 정책 설명이 자동 순환됩니다.' },
+    body: '하단 타임라인이 자동 재생되며 2025→2038로 진행됩니다. 슬라이더를 드래그하면 원하는 연도로 이동, 지역 이름표를 클릭하면 그 시도의 발전소·변전소·미래정책 브리핑을 볼 수 있어요.' },
+  { h: '이 시뮬레이션 읽는 법', icon: '🗺️', guide: true },
 ];
 
 export default function Intro({ onStart }) {
@@ -24,8 +26,8 @@ export default function Intro({ onStart }) {
         <div className="h-1 w-full rounded-full mb-5" style={{ background: 'linear-gradient(90deg,#7dd3fc,#6ee7b7,#fbbf24)' }} />
         <div className="text-center text-5xl mb-5">{s.icon}</div>
         <div className="rounded-2xl p-5 text-[15px] leading-relaxed"
-          style={{ background: 'linear-gradient(135deg,#f0f8ff,#f3fbf2)', border: '1px solid rgba(56,189,248,0.15)', color: '#5b6b7d' }}>
-          {s.body}
+          style={{ background: 'linear-gradient(135deg,#f0f8ff,#f3fbf2)', border: '1px solid rgba(56,189,248,0.15)', color: '#5b6b7d', maxHeight: s.guide ? '52vh' : 'none', overflowY: s.guide ? 'auto' : 'visible' }}>
+          {s.guide ? <GuideContent /> : s.body}
         </div>
         <div className="mt-6 flex items-center justify-between">
           <div className="flex gap-1.5">
